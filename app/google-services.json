@@ -1,0 +1,106 @@
+{
+  "project_info": {
+    "project_number": "857047594686",
+    "firebase_url": "https://tem-projekt-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "tem-projekt",
+    "storage_bucket": "tem-projekt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857047594686:android:23e2fd6b620cf1e4d9d0ef",
+        "android_client_info": {
+          "package_name": "pl.edu.wat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857047594686-04vhok57vol1qk799ggc37tcv6lvedan.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkTsDy20INI3M2qDVNn-8p09QwYMocnRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857047594686-04vhok57vol1qk799ggc37tcv6lvedan.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857047594686:android:009382acf8f02e62d9d0ef",
+        "android_client_info": {
+          "package_name": "pl.edu.wat.notebookv3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857047594686-04vhok57vol1qk799ggc37tcv6lvedan.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkTsDy20INI3M2qDVNn-8p09QwYMocnRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857047594686-04vhok57vol1qk799ggc37tcv6lvedan.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857047594686:android:a2ff3843eeafb311d9d0ef",
+        "android_client_info": {
+          "package_name": "xyz.klicki.notebook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857047594686-jd4gd2hqavi733lk3cvktt3ej2049prk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.klicki.notebook",
+            "certificate_hash": "b9ef3229ce321262929a927c084489cd831de631"
+          }
+        },
+        {
+          "client_id": "857047594686-04vhok57vol1qk799ggc37tcv6lvedan.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkTsDy20INI3M2qDVNn-8p09QwYMocnRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857047594686-04vhok57vol1qk799ggc37tcv6lvedan.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

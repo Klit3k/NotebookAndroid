@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".view.NoteTakingFragment"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+>
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/note">
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/bottomNavigationView"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="0dp">
+
+                <com.google.android.material.appbar.MaterialToolbar
+                        android:id="@+id/materialToolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#0000FFFF"
+                        android:minHeight="?attr/actionBarSize"
+                        android:theme="@style/Widget.Material3.Toolbar"
+                        app:menu="@menu/top_notetaking_bar"
+                        app:navigationIcon="@drawable/arrow_back_24px" />
+
+            </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+            <androidx.core.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/bottomNavigationView">
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:boxStrokeWidth="0dp"
+                            app:boxStrokeWidthFocused="0dp"
+                            app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/title_input_text"
+                                style="@style/TextAppearance.Material3.TitleLarge"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="start|top"
+                                android:hint="Nazwa"
+                                android:textAlignment="textStart"
+                                android:textAllCaps="false" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/body"
+                            style="@style/ThemeOverlay.Material3.TextInputEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="768dp"
+                            app:boxStrokeWidth="0dp"
+                            app:boxStrokeWidthFocused="0dp"
+                            app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/body_input_text"
+                                style="@style/TextAppearance.Material3.BodyLarge"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="start"
+                                android:hint="Treść"
+                                android:textAlignment="textStart"
+                                android:textAllCaps="false" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

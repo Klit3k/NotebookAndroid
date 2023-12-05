@@ -1,5 +1,7 @@
 package pl.edu.wat.notebookv3;
 
+import android.app.Fragment;
+import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -10,4 +12,5 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
+
 }

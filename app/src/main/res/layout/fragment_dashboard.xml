@@ -8,138 +8,141 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/top_bar"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="#EAE4F1"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="-37dp">
+            android:layout_height="match_parent">
 
-        <ImageView
-                android:id="@+id/logo"
-                android:layout_width="103dp"
-                android:layout_height="42dp"
-                android:layout_marginStart="24dp"
-                android:rotation="-10"
-                android:text="Notebook"
-
-                android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/top_bar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#EAE4F1"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.516"
-                app:srcCompat="@drawable/logo" />
+                tools:layout_editor_absoluteX="-37dp">
 
-        <SearchView
-                android:id="@+id/search_view"
-                style="@style/TextAppearance.Material3.SearchBar"
-                android:layout_width="225dp"
-                android:layout_height="32dp"
-                android:layout_marginStart="16dp"
-                android:layoutDirection="rtl"
-                android:queryHint="@string/find_note"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.52" />
+            <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="103dp"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="24dp"
+                    android:rotation="-10"
+                    android:text="Notebook"
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.516"
+                    app:srcCompat="@drawable/logo"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/body"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
-            app:layout_constraintTop_toBottomOf="@+id/top_bar"
-            tools:layout_editor_absoluteX="131dp">
+            <SearchView
+                    android:id="@+id/search_view"
+                    style="@style/TextAppearance.Material3.SearchBar"
+                    android:layout_width="225dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="16dp"
+                    android:layoutDirection="rtl"
+                    android:queryHint="@string/find_note"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.52"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler"
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/body"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginLeft="18dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="18dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
+                app:layout_constraintTop_toBottomOf="@+id/top_bar"
+                tools:layout_editor_absoluteX="131dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="18dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bottom_bar"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-                android:id="@+id/bottom_bar_body"
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bottom_bar"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#EFE5FF"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="55dp"
+                app:layout_constraintBottom_toBottomOf="parent">
 
-            <!-- Note: A RecyclerView can also be used -->
-
-            <androidx.core.widget.NestedScrollView
-                    android:id="@+id/nestedScrollView"
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                    android:id="@+id/bottom_bar_body"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#EAE4F1"
-                    android:clipToPadding="false" />
+                    android:layout_height="60dp"
+                    android:background="#EFE5FF"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                <!-- Note: A RecyclerView can also be used -->
+
+                <androidx.core.widget.NestedScrollView
+                        android:id="@+id/nestedScrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#EAE4F1"
+                        android:clipToPadding="false"/>
 
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/new_note_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:contentDescription="TODO"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    app:fabCustomSize="50dp"
-                    app:fabSize="auto"
-                    app:layout_anchor="@+id/nestedScrollView"
-                    app:layout_anchorGravity="center"
-                    app:maxImageSize="32dp"
-                    app:srcCompat="@drawable/baseline_add_circle_outline_24" />
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/new_note_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:contentDescription="TODO"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        app:fabCustomSize="50dp"
+                        app:fabSize="auto"
+                        app:layout_anchor="@+id/nestedScrollView"
+                        app:layout_anchorGravity="center"
+                        app:maxImageSize="32dp"
+                        app:srcCompat="@drawable/baseline_add_circle_outline_24"/>
 
-            <Button
-                    android:id="@+id/account_button"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="55dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="15dp"
-                    android:includeFontPadding="false"
-                    android:textAlignment="center"
-                    app:icon="@drawable/person_24px"
-                    app:iconGravity="textStart"
-                    app:iconPadding="-2dp"
-                    app:iconSize="25dp"
-                    app:iconTint="#21005D"
-                    app:layout_anchor="@+id/nestedScrollView"
-                    app:layout_anchorGravity="end|center"
-                    app:strokeWidth="0.5dp" />
+                <Button
+                        android:id="@+id/account_button"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="55dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="15dp"
+                        android:includeFontPadding="false"
+                        android:textAlignment="center"
+                        app:icon="@drawable/person_24px"
+                        app:iconGravity="textStart"
+                        app:iconPadding="-2dp"
+                        app:iconSize="25dp"
+                        app:iconTint="#21005D"
+                        app:layout_anchor="@+id/nestedScrollView"
+                        app:layout_anchorGravity="end|center"
+                        app:strokeWidth="0.5dp"/>
 
-            <Button
-                    android:id="@+id/logout_button"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="55dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:visibility="gone"
-                    app:icon="@drawable/logout_24px"
-                    app:iconGravity="textEnd"
-                    app:iconSize="25dp"
-                    app:iconTint="#FF21005D"
-                    app:layout_anchor="@+id/nestedScrollView"
-                    app:layout_anchorGravity="center|start"
-                    app:strokeWidth="0.5dp" />
+                <Button
+                        android:id="@+id/logout_button"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="55dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:visibility="gone"
+                        app:icon="@drawable/logout_24px"
+                        app:iconGravity="textEnd"
+                        app:iconSize="25dp"
+                        app:iconTint="#FF21005D"
+                        app:layout_anchor="@+id/nestedScrollView"
+                        app:layout_anchorGravity="center|start"
+                        app:strokeWidth="0.5dp"/>
 
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

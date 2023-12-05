@@ -3,12 +3,16 @@ package pl.edu.wat.notebookv3.repository;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class FirebaseUserRepository {
     private FirebaseAuth mAuth;
+    private final FirebaseFirestore firebaseFirestore;
+    private final String COLLECTION_PATH = "Users";
 
     public FirebaseUserRepository() {
         this.mAuth = FirebaseAuth.getInstance();
+        this.firebaseFirestore = FirebaseFirestore.getInstance();
     }
 
     public FirebaseUser get() {
@@ -26,4 +30,9 @@ public class FirebaseUserRepository {
         AuthCredential authCredential =  FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
         return mAuth.signInWithCredential(authCredential);
     }
+
+    public Task<AuthResult> register(String email, String password) {
+       return mAuth.createUserWithEmailAndPassword(email, password);
+    }
+
 }

@@ -5,7 +5,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
+import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +41,7 @@ import java.util.*;
 
 public class AccountFragment extends Fragment {
     private AccountViewModel viewModel;
+    private AccountFragmentArgs args;
     public static final int[] COLOR = {
             Color.rgb(92,182,80), Color.rgb(139,95,202), Color.rgb(	166,179,70),
             Color.rgb(191,70,138), Color.rgb(77,181,152), Color.rgb(	203,84,44),
@@ -56,6 +59,7 @@ public class AccountFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account, container, false);
         viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+        args = AccountFragmentArgs.fromBundle(getArguments());
         view.findViewById(R.id.signout_button).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -67,8 +71,12 @@ public class AccountFragment extends Fragment {
         List<LocalDateTime> localDateTimes = new ArrayList<>();
         HashMap<Month, Integer> info = new HashMap<>();
 
-        PieChart chart  = view.findViewById(R.id.barChart);
+        TextView email = view.findViewById(R.id.email_text);
+        email.setText(Html.fromHtml(String.format("Email: <b>%s</b>", viewModel.getEmail())));
+        TextView lastDate = view.findViewById(R.id.last_note_text);
+        lastDate.setText(Html.fromHtml(String.format("Last note: <b>%s</b>", args.getLastNoteDate())));
 
+        PieChart chart  = view.findViewById(R.id.barChart);
         viewModel.getTimes().observe(getViewLifecycleOwner(), x -> {
             Log.d("Test", String.valueOf(x.size()));
             for (String dateStr : x) {

@@ -3,12 +3,14 @@ package pl.edu.wat.notebookv3.view;
 import android.app.ProgressDialog;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavHostController;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
+import pl.edu.wat.notebookv3.model.Note;
 import pl.edu.wat.notebookv3.model.NoteAdapter;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.viewmodel.DashboardViewModel;
@@ -28,7 +31,7 @@ public class DashboardFragment extends Fragment {
     private ProgressDialog progressDialog;
     private RecyclerView noteRecycler;
     private NoteAdapter noteAdapter;
-
+    private MutableLiveData<Note> lastNote;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +43,7 @@ public class DashboardFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        lastNote = new MutableLiveData<>();
         progressDialog = new ProgressDialog(getContext());
 
         noteRecycler = view.findViewById(R.id.recycler);
@@ -48,18 +52,33 @@ public class DashboardFragment extends Fragment {
 
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(noteRecycler);
-
+        ImageView imageView = view.findViewById(R.id.empty_recycler);
         viewModel.getListNote().observe(getViewLifecycleOwner(), noteList -> {
             progressDialog.dismiss();
             noteAdapter = new NoteAdapter(noteList);
             noteRecycler.setAdapter(noteAdapter);
             noteAdapter.notifyDataSetChanged();
+            if(noteList.isEmpty()) {
+                noteRecycler.setVisibility(View.GONE);
+                imageView.setVisibility(View.VISIBLE);
+            } else {
+                noteRecycler.setVisibility(View.VISIBLE);
+                imageView.setVisibility(View.GONE);
+                lastNote.postValue(noteList.stream().findFirst().get());
+            }
         });
 
         view.findViewById(R.id.account_button).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_accountFragment);
+                        DashboardFragmentDirections.ActionDashboardFragmentToAccountFragment direction =
+                                DashboardFragmentDirections.actionDashboardFragmentToAccountFragment()
+                                        .setLastNoteDate(lastNote.getValue().getUpdateTime());
+
+                        Navigation.findNavController(view)
+                                .navigate(
+                                        direction
+                                );
                     }
                 });
         view.findViewById(R.id.new_note_button).setOnClickListener(new View.OnClickListener() {

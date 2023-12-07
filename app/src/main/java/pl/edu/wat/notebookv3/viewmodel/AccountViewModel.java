@@ -24,6 +24,10 @@ public class AccountViewModel extends ViewModel {
         Navigation.findNavController(view)
                 .navigate(R.id.action_accountFragment_to_loginFragment);
     }
+
+    public String getEmail() {
+        return firebaseUserRepository.get().getEmail();
+    }
     public MutableLiveData<List<String>> getTimes() {
         return firebaseNoteRepository.getUpdatesTime();
     }

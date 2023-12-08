@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Folder implements Serializable {
+    private String id;
     private String name;
     private List<Note> notes;
 }

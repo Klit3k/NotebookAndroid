@@ -14,10 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseNoteRepository implements NoteRepository {
-    private static final String FOLDER_PATH = "Folders";
-    private static final String MAIN_FOLDER = "Main";
+
     private final FirebaseFirestore firebaseFirestore;
     private final FirebaseUserRepository firebaseUserRepository;
+    private static final String FOLDER_PATH = "Folders";
+    private static final String MAIN_FOLDER = "Main";
     private final String USERS_PATH = "Users";
     private final String NOTES_PATH = "Notes";
     private final String TIME_PATH = "Time";

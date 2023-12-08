@@ -1,5 +1,10 @@
 package pl.edu.wat.notebookv3.viewmodel;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
@@ -14,20 +19,24 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 import lombok.Getter;
+import pl.edu.wat.notebookv3.model.Folder;
 import pl.edu.wat.notebookv3.model.Note;
-import pl.edu.wat.notebookv3.repository.FirebaseNoteRepository;
-import pl.edu.wat.notebookv3.repository.FirebaseUserRepository;
-import pl.edu.wat.notebookv3.repository.NoteRepository;
+import pl.edu.wat.notebookv3.repository.*;
+import pl.edu.wat.notebookv3.view.DashboardFragment;
+
+import static android.app.PendingIntent.getActivity;
 
 public class DashboardViewModel extends ViewModel {
     @Getter
     MutableLiveData<List<Note>> noteListMutableLiveData;
     private FirebaseNoteRepository firebaseNoteRepository;
     private FirebaseUserRepository firebaseUserRepository;
+    private FirebaseFolderRepository firebaseFolderRepository;
 
     public DashboardViewModel() {
         firebaseNoteRepository = new FirebaseNoteRepository();
         firebaseUserRepository = new FirebaseUserRepository();
+        firebaseFolderRepository = new FirebaseFolderRepository();
         noteListMutableLiveData = getListNote();
     }
     public boolean isLogged() {
@@ -73,7 +82,19 @@ public class DashboardViewModel extends ViewModel {
             }
         });
     }
+    public MutableLiveData<List<Folder>> getListFolder() {
+        return firebaseFolderRepository.getList(new FolderRepository.FolderListResultListener() {
+            @Override
+            public void onResult(List<Folder> note) {
 
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
     public void removeNote(String uuid) {
         firebaseNoteRepository.get(uuid, new NoteRepository.NoteResultListener() {
             @Override
@@ -88,5 +109,6 @@ public class DashboardViewModel extends ViewModel {
         });
         firebaseNoteRepository.remove(uuid);
     }
+
 }
 

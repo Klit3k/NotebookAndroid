@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface NoteRepository {
     void get(String id, NoteResultListener noteResultListener);
-    MutableLiveData<List<Note>> getList(NoteListResultListener noteListResultListener);
+    MutableLiveData<List<Note>> getList(String folder, NoteListResultListener noteListResultListener);
     void remove(String id);
     void create(Note note);
     void update(String id, Note note);

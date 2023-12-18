@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:icon="@drawable/sort" android:iconTint="@color/md_theme_light_onPrimary" app:showAsAction="always"
+        android:title="">
+        <menu>
+            <item android:title="Sortowanie" app:showAsAction="always" android:enabled="false" />
+
+            <item
+                android:id="@+id/sort_title_asc"
+                android:contentDescription="Description"
+                android:icon="@drawable/asc"
+                android:title="Nazwa rosnąco"
+                android:iconTint="@color/md_theme_dark_onPrimary"
+
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/sort_title_desc"
+                android:contentDescription="Description"
+                android:icon="@drawable/desc"
+                android:iconTint="@color/md_theme_dark_onPrimary"
+                android:title="Nazwa malejąco"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/sort_date_asc"
+                android:contentDescription="Description"
+                android:icon="@drawable/asc"
+                android:iconTint="@color/md_theme_dark_onPrimary"
+                android:iconTintMode="src_in"
+                android:title="Data aktualizacji rosnąco"
+                app:showAsAction="withText" />
+            <item
+                android:id="@+id/sort_date_desc"
+                android:contentDescription="Description"
+                android:icon="@drawable/desc"
+                android:iconTint="@color/md_theme_dark_onPrimary"
+                android:title="Data aktualizacji malejąco"
+                app:showAsAction="never" />
+
+        </menu>
+
+    </item>
+
+</menu>

@@ -67,7 +67,7 @@ public class AccountFragment extends Fragment {
                     }
                 });
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy, HH:mm:ss");
         List<LocalDateTime> localDateTimes = new ArrayList<>();
         HashMap<Month, Integer> info = new HashMap<>();
 

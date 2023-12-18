@@ -29,7 +29,9 @@ public class FirebaseNoteRepository implements NoteRepository {
     }
 
 
+
     @Override
+    //todo
     public void get(String id, NoteResultListener noteResultListener) {
         this.firebaseFirestore
                 .collection(USERS_PATH)
@@ -46,12 +48,12 @@ public class FirebaseNoteRepository implements NoteRepository {
     }
 
     @Override
-    public MutableLiveData<List<Note>> getList(NoteListResultListener noteListResultListener) {
+    public MutableLiveData<List<Note>> getList(String folder, NoteListResultListener noteListResultListener) {
         MutableLiveData<List<Note>> noteListMutableLiveData = new MutableLiveData<>();
        this.firebaseFirestore.collection(USERS_PATH)
                .document(firebaseUserRepository.get().getUid())
                .collection(FOLDER_PATH)
-               .document(MAIN_FOLDER)
+               .document(folder)
                .collection(NOTES_PATH)
                 .addSnapshotListener((value, error) -> {
                    List<Note> noteList = new ArrayList<>();
@@ -88,7 +90,7 @@ public class FirebaseNoteRepository implements NoteRepository {
                 .set(note);
     }
     public void create(String folderName, Note note) {
-        this.firebaseFirestore.collection(USERS_PATH)
+                this.firebaseFirestore.collection(USERS_PATH)
                 .document(firebaseUserRepository.get().getUid())
                 .collection(FOLDER_PATH)
                 .document(folderName)

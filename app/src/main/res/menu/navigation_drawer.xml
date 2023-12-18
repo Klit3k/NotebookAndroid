@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/account"
+        android:title="Konto">
+        <menu>
+            <item
+                android:id="@+id/info"
+                android:icon="@drawable/account_circle_24px"
+                android:title="Informacje"
+                android:checkable="true"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/folders"
+        android:title="Foldery"
+        >
+        <menu>
+            <item
+                android:id="@+id/outbox_item2"
+                android:checkable="true"
+                android:icon="@drawable/folder"
+                android:title="Folder1" />
+            <item
+                android:id="@+id/favourites_item2"
+                android:checkable="true"
+                android:icon="@drawable/folder"
+                android:title="Folder2" />
+        </menu>
+    </item>
+
+</menu>

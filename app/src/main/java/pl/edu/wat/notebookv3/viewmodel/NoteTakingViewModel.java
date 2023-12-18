@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class NoteTakingViewModel extends ViewModel {
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy, HH:mm:ss");
     @Getter
     FirebaseNoteRepository firebaseNoteRepository;
 
@@ -28,12 +28,14 @@ public class NoteTakingViewModel extends ViewModel {
     }
 
     public void createNote(String title, String body) {
+        String time = dtf.format(LocalDateTime.now());
+        if(title.isEmpty()) title = time;
         firebaseNoteRepository.create(
                 Note.builder()
                         .uuid(UUID.randomUUID().toString())
                         .title(title)
                         .body(body)
-                        .updateTime(dtf.format(LocalDateTime.now()))
+                        .updateTime(time)
                         .build()
         );
     }

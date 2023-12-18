@@ -1,6 +1,7 @@
 package pl.edu.wat.notebookv3.model;
 
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,21 +11,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.appbar.MaterialToolbar;
 import pl.edu.wat.notebookv3.R;
+import pl.edu.wat.notebookv3.repository.FirebaseFolderRepository;
+import pl.edu.wat.notebookv3.view.DashboardFragment;
 import pl.edu.wat.notebookv3.view.DashboardFragmentDirections;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder> implements Filterable {
     List<Folder> folderList;
-
+    FirebaseFolderRepository folderRepository;
     public FolderAdapter(List<Folder> folderList) {
         List<Folder> test = new ArrayList<>();
         this.folderList = folderList;
+        this.folderRepository = new FirebaseFolderRepository();
     }
 
     @NonNull
@@ -38,19 +39,31 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.name.setText(folderList.get(position).getName());
+        holder.view.setTag(folderList.get(position).getId());
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DashboardFragmentDirections.ActionDashboardFragmentToNoteTakingFragment direction = DashboardFragmentDirections.actionDashboardFragmentToNoteTakingFragment(
-                            folderList.get(position).getName().toString()
-                            , folderList.get(position).getNotes().toString()
-                            , "Test"
-                    );
-
-                    Navigation.findNavController(v)
-                            .navigate(
-                                    direction
-                            );
+                DashboardFragment.setCurrentFolder(v.getTag().toString());
+                Log.d("TEST", "Ustawiono aktualny folder na: " + DashboardFragment.getCurrentFolder());
+                DashboardFragmentDirections.ActionDashboardFragmentSelf direction = DashboardFragmentDirections.actionDashboardFragmentSelf().setFolder(DashboardFragment.getCurrentFolder());
+                Navigation.findNavController(v)
+                        .navigate(
+                                direction
+                        );
+            }
+        });
+        holder.view.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                switch(event.getAction()) {
+                    case DragEvent.ACTION_DROP:
+                        View draggedView = (View) event.getLocalState();
+                        folderRepository.moveNoteToFolder(draggedView.getTag().toString(), v.getTag().toString());
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
     }
@@ -69,6 +82,7 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
     }
 
 
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         View view;
 
@@ -79,23 +93,6 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
             super(itemView);
             view = itemView;
             name = view.findViewById(R.id.folderName);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("TEST::", "OnClick tag: " + view.getTag());
-//                    DashboardFragmentDirections.ActionDashboardFragmentToNoteTakingFragment direction = DashboardFragmentDirections.actionDashboardFragmentToNoteTakingFragment(
-//                            titleToolbar.getTitle().toString()
-//                            , body.getText().toString()
-//                            , view.getTag().toString()
-//                    );
-//
-//                    Navigation.findNavController(view)
-//                            .navigate(
-//                                    direction
-//                            );
-                }
-
-            });
 
         }
     }

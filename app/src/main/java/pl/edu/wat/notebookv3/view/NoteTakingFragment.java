@@ -82,13 +82,12 @@ public class NoteTakingFragment extends Fragment {
         return v -> {
             String title = titleInputText.getText().toString();
             String body = bodyInputText.getText().toString();
-            if (tag != null)
-                if (title.isEmpty() && body.isEmpty()) {
-                    noteTakingViewModel.deleteNote(tag);
-                    Snackbar.make(v, "Empty note has been removed.", Snackbar.LENGTH_SHORT).show();
-                } else noteTakingViewModel.updateNote(tag, title, body);
-            else
-                noteTakingViewModel.createNote(title, body);
+            if (!body.isEmpty()) {
+                if (tag != null)
+                    noteTakingViewModel.updateNote(tag, title, body);
+                else
+                    noteTakingViewModel.createNote(title, body);
+            }
             Navigation.findNavController(v)
                     .navigate(R.id.action_noteTakingFragment_to_dashboardFragment);
         };

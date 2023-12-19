@@ -14,13 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Note;
+import pl.edu.wat.notebookv3.view.DashboardFragment;
 import pl.edu.wat.notebookv3.view.DashboardFragmentDirections;
 
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> implements Filterable {
     List<Note> noteList;
@@ -28,9 +28,10 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
 
     public NoteAdapter(List<Note> noteList) {
         this.noteList = noteList;
-//        this.noteList.sort(Comparator.comparing(Note::getUpdateTime).reversed());
+        this.noteList.sort(Comparator.comparing(Note::getUpdateTime).reversed());
         this.noteArrayListFilter = this.noteList;
     }
+
 
     public void sortByTitle(boolean asc) {
         if(asc)
@@ -87,6 +88,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
                         noteList.get(position).getTitle()
                         ,  noteList.get(position).getBody()
                         ,  noteList.get(position).getUuid()
+                        , DashboardFragment.getCurrentFolder()
                 );
 
                 Navigation.findNavController( holder.view)

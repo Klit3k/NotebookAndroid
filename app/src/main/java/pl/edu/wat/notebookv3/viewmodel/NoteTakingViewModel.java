@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel;
 import lombok.Getter;
 import pl.edu.wat.notebookv3.model.Note;
 import pl.edu.wat.notebookv3.repository.FirebaseNoteRepository;
+import pl.edu.wat.notebookv3.repository.NoteRepos;
+import pl.edu.wat.notebookv3.view.DashboardFragment;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,9 +20,10 @@ public class NoteTakingViewModel extends ViewModel {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy, HH:mm:ss");
     @Getter
     FirebaseNoteRepository firebaseNoteRepository;
-
+    NoteRepos noteRepos;
     public NoteTakingViewModel() {
         firebaseNoteRepository = new FirebaseNoteRepository();
+        noteRepos = new NoteRepos();
     }
 
     public void deleteNote(String uid) {
@@ -30,24 +33,26 @@ public class NoteTakingViewModel extends ViewModel {
     public void createNote(String title, String body) {
         String time = dtf.format(LocalDateTime.now());
         if(title.isEmpty()) title = time;
-        firebaseNoteRepository.create(
+        noteRepos.create(
                 Note.builder()
                         .uuid(UUID.randomUUID().toString())
                         .title(title)
                         .body(body)
                         .updateTime(time)
                         .build()
+                , DashboardFragment.getCurrentFolder()
         );
     }
 
     public void updateNote(String uid, String title, String body) {
-        firebaseNoteRepository.update(uid,
+        noteRepos.update(
                 Note.builder()
                         .title(title)
                         .body(body)
                         .uuid(uid)
                         .updateTime(dtf.format(LocalDateTime.now()))
-                        .build());
+                        .build(),
+                DashboardFragment.getCurrentFolder());
     }
 
     public void share() {

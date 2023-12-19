@@ -84,7 +84,7 @@ public class FirebaseNoteRepository implements NoteRepository {
     }
 
     @Override
-    public void create(Note note) {
+    public void create(Note note, String folder) {
 //        note.setFolder(Folder.builder()
 //                        .name("Test")
 //                .build());
@@ -92,7 +92,7 @@ public class FirebaseNoteRepository implements NoteRepository {
         this.firebaseFirestore.collection(USERS_PATH)
                 .document(firebaseUserRepository.get().getUid())
                 .collection(FOLDER_PATH)
-                .document(MAIN_FOLDER)
+                .document(folder)
                 .collection(NOTES_PATH)
                 .document(note.getUuid())
                 .set(note);

@@ -353,24 +353,12 @@
 
                     </LinearLayout>
 
-                    <Button
-                        android:id="@+id/mainFolder"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginTop="15dp"
-                        android:gravity="start|center_vertical"
-                        android:text="Nieprzypisane"
-                        android:textColor="@color/md_theme_dark_secondaryContainer"
-                        app:icon="@drawable/folder"
-                        app:iconGravity="start"
-                        app:iconSize="24dp"
-                        app:iconTint="@color/md_theme_dark_secondaryContainer" />
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/folderRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_marginTop="15dp"
                         android:layout_marginLeft="16dp"
 
                         />

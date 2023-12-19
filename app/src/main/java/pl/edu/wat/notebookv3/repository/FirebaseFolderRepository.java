@@ -20,7 +20,6 @@ import java.util.NoSuchElementException;
 
 public class FirebaseFolderRepository implements FolderRepository {
     private static final String FOLDER_PATH = "Folders";
-    private static final String MAIN_FOLDER = "Main";
     private final String USERS_PATH = "Users";
     private final String NOTES_PATH = "Notes";
     private final FirebaseFirestore firebaseFirestore;

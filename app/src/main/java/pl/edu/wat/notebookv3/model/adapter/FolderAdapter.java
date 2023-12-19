@@ -44,9 +44,11 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DashboardFragment.setCurrentFolder(folderList.get(position).getName());
+
                 DashboardFragmentDirections.ActionDashboardFragmentSelf direction =
-                        DashboardFragmentDirections.actionDashboardFragmentSelf()
-                                .setFolder(folderList.get(position).getName());
+                        DashboardFragmentDirections.actionDashboardFragmentSelf(folderList.get(position).getName());
+
                 Navigation.findNavController(v)
                         .navigate(
                                 direction

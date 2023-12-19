@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,14 +83,22 @@ public class NoteTakingFragment extends Fragment {
         return v -> {
             String title = titleInputText.getText().toString();
             String body = bodyInputText.getText().toString();
+            Log.d("Test", "currentFolder = "+args.getCurrentFolder());
             if (!body.isEmpty()) {
                 if (tag != null)
                     noteTakingViewModel.updateNote(tag, title, body);
                 else
                     noteTakingViewModel.createNote(title, body);
             }
+
+            NoteTakingFragmentDirections.ActionNoteTakingFragmentToDashboardFragment direction =
+                    NoteTakingFragmentDirections.actionNoteTakingFragmentToDashboardFragment(DashboardFragment.getCurrentFolder());
+
+
             Navigation.findNavController(v)
-                    .navigate(R.id.action_noteTakingFragment_to_dashboardFragment);
+                    .navigate(
+                            direction
+                    );
         };
     }
 

@@ -16,6 +16,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -42,13 +43,14 @@ import java.util.List;
 
 
 public class DashboardFragment extends Fragment {
-    private final String MAIN_FOLDER = "Main";
+    public final static String MAIN_FOLDER = "Nieprzypisane";
     private DashboardViewModel viewModel;
     private ProgressDialog progressDialog;
     private RecyclerView noteRecycler;
     private RecyclerView folderRecycler;
+
     @Getter
-    static MutableLiveData<List<Note>> notes;
+    private MutableLiveData<List<Note>> notes;
     private static NoteAdapter noteAdapter;
     private FolderAdapter folderAdapter;
     private MutableLiveData<Note> lastNote;
@@ -57,12 +59,14 @@ public class DashboardFragment extends Fragment {
     MaterialToolbar materialToolbar;
     @Getter
     @Setter
-    private static String currentFolder;
+    private static String currentFolder = MAIN_FOLDER;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setCurrentFolder(MAIN_FOLDER);
+
+        viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        notes = viewModel.getListNote();
     }
 
     @Override
@@ -71,13 +75,15 @@ public class DashboardFragment extends Fragment {
         ;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-        materialToolbar = view.findViewById(R.id.topAppBar);
 
+
+        materialToolbar = view.findViewById(R.id.topAppBar);
 
         if (getArguments() != null && !getArguments().isEmpty()) {
             args = DashboardFragmentArgs.fromBundle(getArguments());
-            if (args.getFolder() != null) setCurrentFolder(args.getFolder());
+            if (args.getFolder() != null) {
+                setCurrentFolder(args.getFolder());
+            }
         }
 
 
@@ -150,17 +156,6 @@ public class DashboardFragment extends Fragment {
             builder.create().show();
         });
 
-        //Folders
-        view.findViewById(R.id.mainFolder).setOnClickListener(v -> {
-            DashboardFragmentDirections.ActionDashboardFragmentSelf direction =
-                    DashboardFragmentDirections.actionDashboardFragmentSelf()
-                            .setFolder("1");
-            Navigation.findNavController(view)
-                    .navigate(
-                            direction
-                    );
-        });
-//
 
         //Recycler
         RecyclerView.LayoutManager folderLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -213,28 +208,36 @@ public class DashboardFragment extends Fragment {
         helper.attachToRecyclerView(noteRecycler);
         imageView = view.findViewById(R.id.empty_recycler);
 
-        viewModel.getListNote(getCurrentFolder()).observe(getViewLifecycleOwner(), noteList -> {
-            progressDialog.dismiss();
-            noteAdapter = new NoteAdapter(noteList);
-            noteRecycler.setAdapter(noteAdapter);
-            Log.d("TEST", "aktualny folder: " + getCurrentFolder());
+        notes.observe(getViewLifecycleOwner(), new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> noteList) {
+                progressDialog.dismiss();
+                noteAdapter = new NoteAdapter(noteList);
+                noteRecycler.setAdapter(noteAdapter);
 
-
-            if (noteList.isEmpty()) {
-                noteRecycler.setVisibility(View.GONE);
-                imageView.setVisibility(View.VISIBLE);
-                Log.d("TEST::lista", "Aktualnie pobranych notatek: " + noteList.size());
-            } else {
-                noteRecycler.setVisibility(View.VISIBLE);
-                imageView.setVisibility(View.GONE);
-                lastNote.postValue(noteList.stream().findFirst().orElse(null));
+                if (noteList.isEmpty()) {
+                    noteRecycler.setVisibility(View.GONE);
+                    imageView.setVisibility(View.VISIBLE);
+                } else {
+                    noteRecycler.setVisibility(View.VISIBLE);
+                    imageView.setVisibility(View.GONE);
+                    lastNote.postValue(noteList.stream().findFirst().orElse(null));
+                }
                 Log.d("TEST::lista", "Aktualnie pobranych notatek: " + noteList.size());
             }
         });
         view.findViewById(R.id.new_note_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(view).navigate(R.id.action_dashboardFragment_to_noteTakingFragment);
+                DashboardFragmentDirections.ActionDashboardFragmentToNoteTakingFragment direction =
+                        DashboardFragmentDirections.actionDashboardFragmentToNoteTakingFragment(
+                                null, null, null, getCurrentFolder()
+                        );
+
+                Navigation.findNavController(view)
+                        .navigate(
+                                direction
+                        );
             }
         });
         return view;
@@ -278,4 +281,9 @@ public class DashboardFragment extends Fragment {
 
     };
 
+    public static void refreshAdapter() {
+        if (noteAdapter != null) {
+            noteAdapter.notifyDataSetChanged();
+        }
+    }
 }

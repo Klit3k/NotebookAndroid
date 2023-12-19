@@ -16,6 +16,7 @@ import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Folder;
 import pl.edu.wat.notebookv3.model.Note;
 import pl.edu.wat.notebookv3.repository.*;
+import pl.edu.wat.notebookv3.view.DashboardFragment;
 
 import static android.app.PendingIntent.getActivity;
 
@@ -25,11 +26,12 @@ public class DashboardViewModel extends ViewModel {
     private FirebaseNoteRepository firebaseNoteRepository;
     private FirebaseUserRepository firebaseUserRepository;
     private FirebaseFolderRepository firebaseFolderRepository;
-
+    private NoteRepos noteRepos;
     public DashboardViewModel() {
         firebaseNoteRepository = new FirebaseNoteRepository();
         firebaseUserRepository = new FirebaseUserRepository();
         firebaseFolderRepository = new FirebaseFolderRepository();
+        noteRepos = new NoteRepos();
     }
     public boolean isLogged() {
         return firebaseUserRepository.get() != null;
@@ -42,6 +44,7 @@ public class DashboardViewModel extends ViewModel {
                         .body(note.getBody())
                         .updateTime(note.getUpdateTime())
                         .build()
+                , DashboardFragment.getCurrentFolder()
         );
     }
     private MutableLiveData<Note> lastlyDeletedNote;
@@ -61,18 +64,8 @@ public class DashboardViewModel extends ViewModel {
 
         return lastlyDeletedNote;
     }
-    public MutableLiveData<List<Note>> getListNote(String folder) {
-        return firebaseNoteRepository.getList(folder, new NoteRepository.NoteListResultListener() {
-            @Override
-            public void onNoteResult(List<Note> notes) {
-
-            }
-
-            @Override
-            public void onNoteError(Exception e) {
-
-            }
-        });
+    public MutableLiveData<List<Note>> getListNote() {
+        return noteRepos.getList(DashboardFragment.getCurrentFolder());
     }
     public MutableLiveData<List<Folder>> getListFolder() {
         return firebaseFolderRepository.getList(new FolderRepository.FolderListResultListener() {

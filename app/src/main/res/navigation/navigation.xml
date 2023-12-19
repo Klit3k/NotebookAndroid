@@ -26,8 +26,7 @@
         <action android:id="@+id/action_dashboardFragment_to_noteTakingFragment"
                 app:destination="@id/noteTakingFragment"/>
         <action android:id="@+id/action_dashboardFragment_self" app:destination="@id/dashboardFragment"/>
-        <argument android:name="folder" app:argType="string"
-            android:defaultValue="Main" />
+        <argument android:name="folder" app:argType="string" />
         <action
             android:id="@+id/action_dashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment"
@@ -45,5 +44,8 @@
         <action android:id="@+id/action_noteTakingFragment_to_dashboardFragment"
                 app:destination="@id/dashboardFragment"/>
         <argument android:name="tag" app:argType="string" app:nullable="true"/>
+        <argument
+            android:name="currentFolder"
+            app:argType="string" />
     </fragment>
 </navigation>

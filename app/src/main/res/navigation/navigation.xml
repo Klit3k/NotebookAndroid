@@ -27,11 +27,14 @@
                 app:destination="@id/noteTakingFragment"/>
         <action android:id="@+id/action_dashboardFragment_self" app:destination="@id/dashboardFragment"/>
         <argument android:name="folder" app:argType="string" android:defaultValue="Main"/>
+        <action
+            android:id="@+id/action_dashboardFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment android:id="@+id/accountFragment" android:name="pl.edu.wat.notebookv3.view.AccountFragment"
               android:label="fragment_account" tools:layout="@layout/fragment_account">
-        <action android:id="@+id/action_accountFragment_to_loginFragment" app:destination="@id/loginFragment"
-                app:popUpToInclusive="true" app:popUpTo="@id/loginFragment"/>
         <argument android:name="lastNoteDate" app:argType="string" app:nullable="true"/>
     </fragment>
     <fragment android:id="@+id/noteTakingFragment" android:name="pl.edu.wat.notebookv3.view.NoteTakingFragment"

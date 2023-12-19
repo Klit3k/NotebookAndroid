@@ -60,12 +60,6 @@ public class AccountFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
         viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
         args = AccountFragmentArgs.fromBundle(getArguments());
-        view.findViewById(R.id.signout_button).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        viewModel.logout(v);
-                    }
-                });
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy, HH:mm:ss");
         List<LocalDateTime> localDateTimes = new ArrayList<>();

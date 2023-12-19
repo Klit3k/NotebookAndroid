@@ -12,9 +12,10 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card"
+            style="@style/Widget.Material3.CardView.Outlined"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
 
+            android:layout_height="128dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,6 +83,12 @@
                 <!-- Buttons -->
 
             </LinearLayout>
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="3dp"
+                android:layout_height="match_parent"
+                android:background="@color/md_theme_light_onPrimaryContainer" />
 
         </com.google.android.material.card.MaterialCardView>
     </androidx.constraintlayout.widget.ConstraintLayout>

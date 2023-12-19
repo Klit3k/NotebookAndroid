@@ -1,11 +1,14 @@
 package pl.edu.wat.notebookv3.viewmodel;
 
+import android.view.View;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.List;
 
+import androidx.navigation.Navigation;
 import lombok.Getter;
+import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Folder;
 import pl.edu.wat.notebookv3.model.Note;
 import pl.edu.wat.notebookv3.repository.*;
@@ -94,6 +97,10 @@ public class DashboardViewModel extends ViewModel {
         });
         firebaseNoteRepository.remove(uuid);
     }
-
+    public void logout(View view) {
+        firebaseUserRepository.logout();
+        Navigation.findNavController(view)
+                .navigate(R.id.action_dashboardFragment_to_loginFragment);
+    }
 }
 

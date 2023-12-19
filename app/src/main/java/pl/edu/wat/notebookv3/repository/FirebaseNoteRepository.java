@@ -6,11 +6,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import pl.edu.wat.notebookv3.model.Folder;
 import pl.edu.wat.notebookv3.model.Note;
 import pl.edu.wat.notebookv3.model.TimeLog;
 import pl.edu.wat.notebookv3.model.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class FirebaseNoteRepository implements NoteRepository {
@@ -81,6 +84,10 @@ public class FirebaseNoteRepository implements NoteRepository {
 
     @Override
     public void create(Note note) {
+//        note.setFolder(Folder.builder()
+//                        .name("Test")
+//                .build());
+//        note.setTags(Arrays.asList("a", "b", "c"));
         this.firebaseFirestore.collection(USERS_PATH)
                 .document(firebaseUserRepository.get().getUid())
                 .collection(FOLDER_PATH)

@@ -19,11 +19,7 @@ public class AccountViewModel extends ViewModel {
         firebaseNoteRepository = new FirebaseNoteRepository();
     }
 
-    public void logout(View view) {
-        firebaseUserRepository.logout();
-        Navigation.findNavController(view)
-                .navigate(R.id.action_accountFragment_to_loginFragment);
-    }
+
 
     public String getEmail() {
         return firebaseUserRepository.get().getEmail();

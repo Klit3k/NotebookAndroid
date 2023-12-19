@@ -108,6 +108,9 @@ public class DashboardFragment extends Fragment {
                 if(item.getItemId() == R.id.folders) {
 //                    navigationView.getMenu().findItem(R.id.)
                 }
+                if(item.getItemId() == R.id.logout) {
+                    viewModel.logout(view);
+                }
                 return false;
             }
         });

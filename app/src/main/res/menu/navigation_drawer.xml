@@ -10,6 +10,21 @@
                 android:icon="@drawable/account_circle_24px"
                 android:title="Informacje"
                 android:checkable="true"/>
+            <item
+                android:id="@+id/starred"
+                android:icon="@drawable/star"
+                android:title="Ważne notatki"
+                android:checkable="true"/>
+            <item
+                android:id="@+id/trash"
+                android:icon="@drawable/delete"
+                android:title="Usunięte notatki"
+                android:checkable="true"/>
+            <item
+                android:id="@+id/logout"
+                android:icon="@drawable/logout_24px"
+                android:title="Wyloguj"
+                android:checkable="true"/>
         </menu>
     </item>
     <item
@@ -29,5 +44,21 @@
                 android:title="Folder2" />
         </menu>
     </item>
-
+    <item
+        android:id="@+id/tags"
+        android:title="Tagi"
+        >
+        <menu>
+            <item
+                android:id="@+id/tag1"
+                android:checkable="true"
+                android:icon="@drawable/tag"
+                android:title="Folder1" />
+            <item
+                android:id="@+id/tag2"
+                android:checkable="true"
+                android:icon="@drawable/tag"
+                android:title="Folder2" />
+        </menu>
+    </item>
 </menu>

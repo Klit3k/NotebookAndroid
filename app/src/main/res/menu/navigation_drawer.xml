@@ -33,12 +33,12 @@
         >
         <menu>
             <item
-                android:id="@+id/outbox_item2"
+                android:id="@+id/mainFolder"
                 android:checkable="true"
                 android:icon="@drawable/folder"
                 android:title="Folder1" />
             <item
-                android:id="@+id/favourites_item2"
+                android:id="@+id/folder2"
                 android:checkable="true"
                 android:icon="@drawable/folder"
                 android:title="Folder2" />

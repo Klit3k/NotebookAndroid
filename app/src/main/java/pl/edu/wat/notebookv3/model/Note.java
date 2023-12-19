@@ -18,8 +18,6 @@ public class Note implements Serializable {
     private String body;
     private String updateTime;
     private boolean starred;
-    private Folder folder;
-    private List<String> tags;
     @Exclude
     private String uuid;
 }

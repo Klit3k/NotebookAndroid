@@ -1,4 +1,4 @@
-package pl.edu.wat.notebookv3.model;
+package pl.edu.wat.notebookv3.model.adapter;
 
 import android.content.ClipData;
 import android.util.Log;
@@ -9,11 +9,11 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
 import pl.edu.wat.notebookv3.R;
+import pl.edu.wat.notebookv3.model.Note;
 import pl.edu.wat.notebookv3.view.DashboardFragmentDirections;
 
 
@@ -27,9 +27,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
     private List<Note> noteArrayListFilter;
 
     public NoteAdapter(List<Note> noteList) {
-        this.noteList = noteList.stream()
-                .sorted(Comparator.comparing(Note::getUpdateTime).reversed())
-                .collect(Collectors.toList());
+        this.noteList = noteList;
+//        this.noteList.sort(Comparator.comparing(Note::getUpdateTime).reversed());
         this.noteArrayListFilter = this.noteList;
     }
 
@@ -58,6 +57,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
         if(noteList.get(position).getTitle().length() >= 40) {
             holder.titleToolbar.setTitle(noteList.get(position).getTitle().substring(0, 40)+"...");
         } else  holder.titleToolbar.setTitle(noteList.get(position).getTitle());
@@ -149,6 +149,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
         return filter;
     }
 
+    public void setFolder(String folderId) {
+
+    }
     public class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         MaterialToolbar titleToolbar;

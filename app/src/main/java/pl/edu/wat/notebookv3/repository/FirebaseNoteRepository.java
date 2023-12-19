@@ -31,8 +31,6 @@ public class FirebaseNoteRepository implements NoteRepository {
         this.firebaseUserRepository = new FirebaseUserRepository();
     }
 
-
-
     @Override
     //todo
     public void get(String id, NoteResultListener noteResultListener) {
@@ -57,17 +55,20 @@ public class FirebaseNoteRepository implements NoteRepository {
                .document(firebaseUserRepository.get().getUid())
                .collection(FOLDER_PATH)
                .document(folder)
-               .collection(NOTES_PATH)
-                .addSnapshotListener((value, error) -> {
-                   List<Note> noteList = new ArrayList<>();
-                   for (QueryDocumentSnapshot doc : value) {
-                       if (doc != null) {
-                           Note note = doc.toObject(Note.class);
-                           noteList.add(note);
-                       }
+               .get()
+               .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                   @Override
+                   public void onSuccess(DocumentSnapshot documentSnapshot) {
+                       List<Note> noteList = new ArrayList<>();
+                        if (documentSnapshot.toObject(Folder.class) != null && !documentSnapshot.toObject(Folder.class).getNotes().isEmpty()) {
+                            for (Note note :
+                                    documentSnapshot.toObject(Folder.class).getNotes()) {
+                                noteList.add(note);
+                            }
+                            noteListMutableLiveData.postValue(noteList);
+                        }
                    }
-                    noteListMutableLiveData.postValue(noteList);
-                });
+               });
         return noteListMutableLiveData;
     }
 

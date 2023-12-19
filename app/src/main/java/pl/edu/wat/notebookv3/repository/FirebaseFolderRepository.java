@@ -4,7 +4,11 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.firestore.*;
 import org.jetbrains.annotations.NotNull;
 import pl.edu.wat.notebookv3.model.Folder;
@@ -12,6 +16,7 @@ import pl.edu.wat.notebookv3.model.Note;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class FirebaseFolderRepository implements FolderRepository {
     private static final String FOLDER_PATH = "Folders";
@@ -26,6 +31,92 @@ public class FirebaseFolderRepository implements FolderRepository {
         this.firebaseFirestore = FirebaseFirestore.getInstance();
         this.firebaseUserRepository = new FirebaseUserRepository();
         this.firebaseNoteRepository = new FirebaseNoteRepository();
+    }
+
+    @Override
+    public void create(Folder folder) {
+
+            this.firebaseFirestore.collection(USERS_PATH)
+                    .document(firebaseUserRepository.get().getUid())
+                    .collection(FOLDER_PATH)
+                    .document(folder.getName())
+                    .set(folder);
+    }
+
+    @Override
+    public Task<DocumentSnapshot> getById(String id) {
+        return this.firebaseFirestore.collection(USERS_PATH)
+                .document(firebaseUserRepository.get().getUid())
+                .collection(FOLDER_PATH)
+                .document(id)
+                .get();
+    }
+
+    @Override
+    public void remove(String id) throws NoSuchElementException {
+        getById(id)
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        firebaseFirestore.collection(USERS_PATH)
+                                .document(firebaseUserRepository.get().getUid())
+                                .collection(FOLDER_PATH)
+                                .document(id)
+                                .delete();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull @NotNull Exception e) {
+                        throw new NoSuchElementException("Folder with entered id doesn't exists");
+                    }
+                });
+
+    }
+
+    @Override
+    public void update(String id, Folder folder) {
+        firebaseFirestore.collection(USERS_PATH)
+                .document(firebaseUserRepository.get().getUid())
+                .collection(FOLDER_PATH)
+                .document(id)
+                .set(folder);
+    }
+
+    @Override
+    public void addNoteToFolder(Note note, String folderId) {
+        getById(folderId)
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (!documentSnapshot.exists()) throw new NoSuchElementException("Folder doesn't exists");
+
+                        Folder folder = documentSnapshot.toObject(Folder.class);
+                        if (folder.getNotes() == null)
+                            folder.setNotes(new ArrayList<>());
+
+                        folder.getNotes()
+                                .add(note);
+
+                        update(folder.getName(), folder);
+                    }
+                });
+    }
+
+    @Override
+    public void removeNoteFromFolder(String noteId, String folderId) {
+        getById(folderId)
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (!documentSnapshot.exists()) throw new NoSuchElementException("Folder doesn't exists");
+                        Folder folder = documentSnapshot.toObject(Folder.class);
+                        if (folder.getNotes() != null) {
+                            folder.getNotes()
+                                    .remove(folder);
+                        }
+                    }
+                });
     }
 
     public void moveNoteToFolder(String noteId, String folderId) {
@@ -51,8 +142,20 @@ public class FirebaseFolderRepository implements FolderRepository {
                 return null;
             }
         });
+    }
+
+    public Task<QuerySnapshot> getNoteListInFolder(String folderId) {
+
+        return this.firebaseFirestore
+                .collection(USERS_PATH)
+                .document(firebaseUserRepository.get().getUid())
+                .collection(FOLDER_PATH)
+                .document(folderId)
+                .collection(NOTES_PATH)
+                .get();
 
     }
+    //===========================================================================
 
     @Override
     public MutableLiveData<List<Folder>> getList(FolderListResultListener folderListResultListener) {
@@ -67,7 +170,6 @@ public class FirebaseFolderRepository implements FolderRepository {
 //                            Folder folder = doc.toObject(Folder.class);
                             //doc.getReference().collection("Notes")
                             Folder folder = Folder.builder()
-                                    .id(doc.getId())
                                     .name(doc.getId())
                                     .notes(new ArrayList<>())
                                     .build();
@@ -86,15 +188,6 @@ public class FirebaseFolderRepository implements FolderRepository {
         return folderListMutableLiveData;
     }
 
-    public Task<QuerySnapshot> getNoteListInFolder(String folderId) {
 
-        return this.firebaseFirestore.collection(USERS_PATH)
-                .document(firebaseUserRepository.get().getUid())
-                .collection(FOLDER_PATH)
-                .document(folderId)
-                .collection(NOTES_PATH)
-                .get();
-
-    }
 }
 

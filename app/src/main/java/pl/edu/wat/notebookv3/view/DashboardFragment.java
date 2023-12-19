@@ -1,15 +1,15 @@
 package pl.edu.wat.notebookv3.view;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.ExpandableListView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -21,21 +21,23 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.firestore.DocumentSnapshot;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 import lombok.Getter;
 import lombok.Setter;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import pl.edu.wat.notebookv3.model.*;
 import pl.edu.wat.notebookv3.R;
+import pl.edu.wat.notebookv3.model.adapter.FolderAdapter;
+import pl.edu.wat.notebookv3.model.adapter.NoteAdapter;
 import pl.edu.wat.notebookv3.viewmodel.DashboardViewModel;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -66,14 +68,17 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-        if( getArguments() != null && !getArguments().isEmpty() ) {
+        materialToolbar = view.findViewById(R.id.topAppBar);
+
+
+        if (getArguments() != null && !getArguments().isEmpty()) {
             args = DashboardFragmentArgs.fromBundle(getArguments());
             if (args.getFolder() != null) setCurrentFolder(args.getFolder());
         }
-        materialToolbar = view.findViewById(R.id.topAppBar);
 
 
         /*
@@ -84,42 +89,89 @@ public class DashboardFragment extends Fragment {
 
         DrawerLayout drawerLayout = view.findViewById(R.id.drawer_layout);
         NavigationView navigationView = view.findViewById(R.id.nav_view);
-
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull @NotNull MenuItem item) {
-                if(item.getItemId() == R.id.info) {
-                    DashboardFragmentDirections.ActionDashboardFragmentToAccountFragment direction;
-                    if (lastNote.getValue() != null) {
-                        direction =
-                                DashboardFragmentDirections.actionDashboardFragmentToAccountFragment()
-                                        .setLastNoteDate(lastNote.getValue().getUpdateTime());
-                    } else {
-                        direction =
-                                DashboardFragmentDirections.actionDashboardFragmentToAccountFragment()
-                                        .setLastNoteDate("None");
-                    }
-                    Navigation.findNavController(view)
-                            .navigate(
-                                    direction
-                            );
-                }
-                if(item.getItemId() == R.id.folders) {
-//                    navigationView.getMenu().findItem(R.id.)
-                }
-                if(item.getItemId() == R.id.logout) {
-                    viewModel.logout(view);
-                }
-                return false;
-            }
-        });
-
         materialToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
+        });
+
+        view.findViewById(R.id.accountInfo).setOnClickListener(v -> {
+            DashboardFragmentDirections.ActionDashboardFragmentToAccountFragment direction;
+            if (lastNote != null && lastNote.getValue() != null) {
+                direction =
+                        DashboardFragmentDirections.actionDashboardFragmentToAccountFragment()
+                                .setLastNoteDate(lastNote.getValue().getUpdateTime());
+            } else {
+                direction =
+                        DashboardFragmentDirections.actionDashboardFragmentToAccountFragment()
+                                .setLastNoteDate("None");
+            }
+            Navigation.findNavController(view)
+                    .navigate(
+                            direction
+                    );
+        });
+        view.findViewById(R.id.navLogout).setOnClickListener(v -> {
+            viewModel.logout(view);
+        });
+        view.findViewById(R.id.add).setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Tworzenie nowego folderu");
+            View customLayout = getLayoutInflater().inflate(R.layout.dialog_input_text, null);
+            builder.setView(customLayout);
+            builder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.setPositiveButton("Utwórz", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    EditText text = customLayout.findViewById(R.id.foldersName);
+                    viewModel.existsFolder(text.getText().toString())
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    if (!documentSnapshot.exists()) {
+                                        dialog.dismiss();
+                                        viewModel.addFolder(text.getText().toString());
+                                        Snackbar.make(view, "Folder został utworzony.", Snackbar.LENGTH_SHORT).show();
+                                    } else {
+                                        dialog.dismiss();
+                                        Snackbar.make(view, "Folder o podanej nazwie już istnieje.", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                }
+            });
+            builder.create().show();
+        });
+
+        //Folders
+        view.findViewById(R.id.mainFolder).setOnClickListener(v -> {
+            DashboardFragmentDirections.ActionDashboardFragmentSelf direction =
+                    DashboardFragmentDirections.actionDashboardFragmentSelf()
+                            .setFolder("1");
+            Navigation.findNavController(view)
+                    .navigate(
+                            direction
+                    );
+        });
+//
+
+        //Recycler
+        RecyclerView.LayoutManager folderLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        folderRecycler = view.findViewById(R.id.folderRecyclerView);
+        folderRecycler.setLayoutManager(folderLayoutManager);
+        folderRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        folderRecycler.setHasFixedSize(true);
+        viewModel.getListFolder().observe(getViewLifecycleOwner(), folderList -> {
+            folderAdapter = new FolderAdapter(folderList);
+            folderRecycler.setAdapter(folderAdapter);
+            folderAdapter.notifyDataSetChanged();
         });
 
         /*
@@ -131,18 +183,23 @@ public class DashboardFragment extends Fragment {
         materialToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if(item.getItemId() == R.id.sort_title_asc) {
+                if (item.getItemId() == R.id.sort_title_asc) {
                     noteAdapter.sortByTitle(true);
-                } else if(item.getItemId() == R.id.sort_title_desc) {
+                } else if (item.getItemId() == R.id.sort_title_desc) {
                     noteAdapter.sortByTitle(false);
-                } else if(item.getItemId() == R.id.sort_date_asc) {
+                } else if (item.getItemId() == R.id.sort_date_asc) {
                     noteAdapter.sortByDate(true);
-                } else if(item.getItemId() == R.id.sort_date_desc) {
+                } else if (item.getItemId() == R.id.sort_date_desc) {
                     noteAdapter.sortByDate(false);
                 }
                 return false;
             }
         });
+        /*
+           ============================================================
+                             Note displaying
+           ============================================================
+        */
 
 
         lastNote = new MutableLiveData<>();
@@ -152,23 +209,9 @@ public class DashboardFragment extends Fragment {
         noteRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         noteRecycler.setHasFixedSize(true);
 
-        RecyclerView.LayoutManager folderLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        folderRecycler = view.findViewById(R.id.folderRecyclerView);
-        folderRecycler.setLayoutManager(folderLayoutManager);
-//        folderRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        folderRecycler.setHasFixedSize(true);
-
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(noteRecycler);
         imageView = view.findViewById(R.id.empty_recycler);
-
-        viewModel.getListFolder().observe(getViewLifecycleOwner(), folderList -> {
-            folderAdapter = new FolderAdapter(folderList);
-            folderRecycler.setAdapter(folderAdapter);
-            folderAdapter.notifyDataSetChanged();
-
-        });
-
 
         viewModel.getListNote(getCurrentFolder()).observe(getViewLifecycleOwner(), noteList -> {
             progressDialog.dismiss();
@@ -177,7 +220,7 @@ public class DashboardFragment extends Fragment {
             Log.d("TEST", "aktualny folder: " + getCurrentFolder());
 
 
-            if(noteList.isEmpty()) {
+            if (noteList.isEmpty()) {
                 noteRecycler.setVisibility(View.GONE);
                 imageView.setVisibility(View.VISIBLE);
                 Log.d("TEST::lista", "Aktualnie pobranych notatek: " + noteList.size());
@@ -196,7 +239,6 @@ public class DashboardFragment extends Fragment {
         });
         return view;
     }
-
 
 
     ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {

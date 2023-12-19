@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Folder implements Serializable {
+public class Tag implements Serializable {
     private String name;
     private List<Note> notes;
 }

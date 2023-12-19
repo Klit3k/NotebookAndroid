@@ -4,9 +4,13 @@ import android.view.View;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.navigation.Navigation;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.firestore.DocumentSnapshot;
 import lombok.Getter;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Folder;
@@ -96,6 +100,26 @@ public class DashboardViewModel extends ViewModel {
             }
         });
         firebaseNoteRepository.remove(uuid);
+    }
+    public Task<DocumentSnapshot> existsFolder(String folderName) {
+        return firebaseFolderRepository.getById(folderName);
+    }
+    public void addFolder(String folderName) {
+            firebaseFolderRepository.create(
+                    Folder.builder()
+                            .name(folderName)
+                            .notes(new ArrayList<>())
+                            .build()
+            );
+    }
+    public void addNoteToFolder() {
+        firebaseFolderRepository.addNoteToFolder(
+                Note.builder()
+                        .title("testowa1")
+                        .body("notatka1")
+                        .build()
+                , "2"
+        );
     }
     public void logout(View view) {
         firebaseUserRepository.logout();

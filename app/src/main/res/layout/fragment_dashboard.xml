@@ -238,7 +238,8 @@
                     app:icon="@drawable/star"
                     app:iconGravity="start"
                     app:iconSize="24dp"
-                    app:iconTint="@color/md_theme_dark_secondaryContainer" />
+                    app:iconTint="@color/md_theme_dark_secondaryContainer"
+                    />
 
                 <Button
                     android:id="@+id/trashedNotes"
@@ -311,24 +312,24 @@
                             android:textColor="@color/md_theme_dark_secondaryContainer"
                             android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                             android:gravity="start|center_vertical"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:text="|"
-                            android:clickable="true"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
-                        <TextView
-                            android:id="@+id/navTagsHeader"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="Tagi"
-                            android:clickable="true"
-                            android:textColor="@color/md_theme_dark_secondaryContainer"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="12dp"-->
+<!--                            android:layout_marginLeft="10dp"-->
+<!--                            android:layout_marginRight="10dp"-->
+<!--                            android:text="|"-->
+<!--                            android:clickable="true"-->
+<!--                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />-->
+<!--                        <TextView-->
+<!--                            android:id="@+id/navTagsHeader"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="12dp"-->
+<!--                            android:text="Tagi"-->
+<!--                            android:clickable="true"-->
+<!--                            android:textColor="@color/md_theme_dark_secondaryContainer"-->
+<!--                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />-->
                         <ImageButton
                             android:id="@+id/add"
                             style="@style/Widget.Material3.Button.Icon"

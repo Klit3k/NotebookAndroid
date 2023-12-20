@@ -5,15 +5,20 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.*;
+import pl.edu.wat.notebookv3.model.ActivityLog;
 import pl.edu.wat.notebookv3.model.Folder;
 import pl.edu.wat.notebookv3.model.Note;
+import pl.edu.wat.notebookv3.model.OperationType;
 import pl.edu.wat.notebookv3.view.DashboardFragment;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class NoteRepos {
+    private static final String LOG_PATH = "Logs";
+
     public static final String TRASH_PATH = ".Trash";
     public static final String STARRED_PATH = ".Starred";
     private final FirebaseFirestore firebaseFirestore;
@@ -57,6 +62,7 @@ public class NoteRepos {
                         }
                     }
                 });
+        logActivity(OperationType.CREATE);
 
     }
 
@@ -114,8 +120,11 @@ public class NoteRepos {
                         }
                     }
                 });
+        logActivity(OperationType.UPDATE);
+
     }
     public  void remove(String uuid, String folderName) {
+
         this.firebaseFolderRepository
                 .getById(folderName)
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -136,6 +145,8 @@ public class NoteRepos {
                         }
                     }
                 });
+        logActivity(OperationType.REMOVE);
+
     }
 
     public MutableLiveData<List<Note>> getList(String folder) {
@@ -180,7 +191,43 @@ public class NoteRepos {
                         }
                     }
                 });
+    }
+    public void logActivity(OperationType operationType) {
 
+        this.firebaseFirestore
+                .collection(USERS_PATH)
+                .document(firebaseUserRepository.get().getUid())
+                .collection(LOG_PATH)
+                .document()
+                .set(
+                        ActivityLog.builder()
+                                .operationType(operationType)
+                                .time(LocalDateTime.now().toString())
+                                .build()
+                );
+    }
+    public MutableLiveData<List<ActivityLog>> getLogs() {
+
+        MutableLiveData<List<ActivityLog>> logs = new MutableLiveData<>();
+        this.firebaseFirestore
+                .collection(USERS_PATH)
+                .document(firebaseUserRepository.get().getUid())
+                .collection(LOG_PATH)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<ActivityLog> logList = new ArrayList<>();
+                        for (DocumentSnapshot snapshot:
+                                queryDocumentSnapshots.getDocuments()) {
+
+                            logList.add(snapshot.toObject(ActivityLog.class));
+                        }
+                        logs.postValue(logList);
+                    }
+                });
+
+        return logs;
     }
     /*
     TODO s

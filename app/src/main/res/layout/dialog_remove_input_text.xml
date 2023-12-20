@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kod do usunięcia konta:"
+        style="@style/MaterialAlertDialog.Material3.Body.Text"
+        android:textSize="18dp" />
+
+    <TextView
+        android:id="@+id/deletion_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/MaterialAlertDialog.Material3.Body.Text"
+        android:text="0123456"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="23dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/foldersName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Przepisz kod" />
+    </com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>

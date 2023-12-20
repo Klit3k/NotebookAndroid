@@ -4,16 +4,12 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import pl.edu.wat.notebookv3.model.Folder;
 import pl.edu.wat.notebookv3.model.Note;
-import pl.edu.wat.notebookv3.model.TimeLog;
-import pl.edu.wat.notebookv3.model.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class FirebaseNoteRepository implements NoteRepository {
@@ -25,6 +21,8 @@ public class FirebaseNoteRepository implements NoteRepository {
     private final String USERS_PATH = "Users";
     private final String NOTES_PATH = "Notes";
     private final String TIME_PATH = "Time";
+    private static final String LOG_PATH = "Logs";
+
 
     public FirebaseNoteRepository() {
         this.firebaseFirestore = FirebaseFirestore.getInstance();
@@ -82,21 +80,7 @@ public class FirebaseNoteRepository implements NoteRepository {
                 .document(id)
                 .delete();
     }
-
     @Override
-    public void create(Note note, String folder) {
-//        note.setFolder(Folder.builder()
-//                        .name("Test")
-//                .build());
-//        note.setTags(Arrays.asList("a", "b", "c"));
-        this.firebaseFirestore.collection(USERS_PATH)
-                .document(firebaseUserRepository.get().getUid())
-                .collection(FOLDER_PATH)
-                .document(folder)
-                .collection(NOTES_PATH)
-                .document(note.getUuid())
-                .set(note);
-    }
     public void create(String folderName, Note note) {
                 this.firebaseFirestore.collection(USERS_PATH)
                 .document(firebaseUserRepository.get().getUid())
@@ -146,4 +130,5 @@ public class FirebaseNoteRepository implements NoteRepository {
                 });
         return timeListMutableLiveData;
     }
+
 }

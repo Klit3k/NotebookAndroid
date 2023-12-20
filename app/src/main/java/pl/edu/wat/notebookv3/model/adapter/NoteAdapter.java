@@ -1,23 +1,30 @@
 package pl.edu.wat.notebookv3.model.adapter;
 
-import android.content.ClipData;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.*;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputEditText;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Note;
+import pl.edu.wat.notebookv3.model.safenote.SafenoteResponse;
+import pl.edu.wat.notebookv3.util.SafenoteService;
 import pl.edu.wat.notebookv3.view.DashboardFragment;
 import pl.edu.wat.notebookv3.view.DashboardFragmentDirections;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -72,6 +79,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
         holder.view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+
                 ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
                 v.startDragAndDrop(data, shadowBuilder, v, 0);
@@ -156,18 +164,20 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
     public void setFolder(String folderId) {
 
     }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         MaterialToolbar titleToolbar;
         TextView body;
         TextView time;
+        MaterialCardView card;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             view = itemView;
             titleToolbar = view.findViewById(R.id.topAppBar);
             body = view.findViewById(R.id.body_text);
             time = view.findViewById(R.id.time_text);
-
+            card = view.findViewById(R.id.card);
 
         }
     }

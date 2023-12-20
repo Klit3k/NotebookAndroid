@@ -11,6 +11,7 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -143,6 +144,7 @@ public class DashboardFragment extends Fragment {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Tworzenie nowego folderu");
             View customLayout = getLayoutInflater().inflate(R.layout.dialog_input_text, null);
+
             builder.setView(customLayout);
             builder.setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
                 @Override
@@ -243,6 +245,16 @@ public class DashboardFragment extends Fragment {
                 Log.d("TEST::lista", "Aktualnie pobranych notatek: " + noteList.size());
             }
         });
+
+
+        if (getCurrentFolder().equals(NoteRepos.TRASH_PATH)) {
+            view.findViewById(R.id.new_note_button).setVisibility(View.GONE);
+            imageView.setVisibility(View.INVISIBLE);
+            imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.delete_black, null));
+        } else {
+            view.findViewById(R.id.new_note_button).setVisibility(View.VISIBLE);
+            imageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.no_content, null));
+        }
         view.findViewById(R.id.new_note_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -275,12 +287,12 @@ public class DashboardFragment extends Fragment {
                 if (getCurrentFolder().equals(NoteRepos.TRASH_PATH)) {
                     viewModel.removeNote(item, getCurrentFolder());
                     Snackbar.make(getView(), "Notatka została usunięta.", Snackbar.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     viewModel.moveToTrash(item);
                     Snackbar.make(getView(), "Notatka została przeniesiona do kosza.", Snackbar.LENGTH_SHORT).show();
                 }
-            } else {
+            } else
+            {
                 Log.d("Test:onSwiped", "Right");
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 ;
@@ -296,25 +308,29 @@ public class DashboardFragment extends Fragment {
                 sp.setLayoutParams(new LinearLayout.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT));
                 sp.setPadding(20, 5, 20, 5);
                 sp.setAdapter(adp);
-
-                String pickFolder = "";
-
-
                 builder
                         .setTitle("Wybierz folder")
                         .setView(sp)
                         .setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Navigation.findNavController(getView()).navigate(R.id.action_dashboardFragment_self);
 
                             }
                         })
                         .setPositiveButton("Przenieś", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("Test:onClick", "transfer: " + getCurrentFolder()+ " -> "+ sp.getSelectedItem().toString() + " tag: "+viewHolder.itemView.getTag().toString());
+                                Log.d("Test:onClick", "transfer: " + getCurrentFolder() + " -> " + sp.getSelectedItem().toString() + " tag: " + viewHolder.itemView.getTag().toString());
 
                                 viewModel.transferNote(viewHolder.itemView.getTag().toString(), getCurrentFolder(), sp.getSelectedItem().toString());
+
+                            }
+                        })
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                Navigation.findNavController(getView()).navigate(R.id.action_dashboardFragment_self);
 
                             }
                         });
@@ -324,7 +340,7 @@ public class DashboardFragment extends Fragment {
 
         public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
-            if (dX <  0 && isCurrentlyActive) {
+            if (dX < 0 && isCurrentlyActive) {
                 RecyclerViewSwipeDecorator.Builder builder = new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                 builder.addBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_theme_light_tertiary))
                         .addActionIcon(R.drawable.delete)
@@ -332,7 +348,7 @@ public class DashboardFragment extends Fragment {
                         .create()
                         .decorate();
 
-            } else if (dX > 0 && isCurrentlyActive){
+            } else if (dX > 0 && isCurrentlyActive) {
                 new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                         .addBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_theme_light_surfaceTint))
                         .addActionIcon(R.drawable.drive_file_move)
@@ -347,9 +363,4 @@ public class DashboardFragment extends Fragment {
 
     };
 
-    public static void refreshAdapter() {
-        if (noteAdapter != null) {
-            noteAdapter.updateList();
-        }
-    }
 }

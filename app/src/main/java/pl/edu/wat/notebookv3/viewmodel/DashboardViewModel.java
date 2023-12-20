@@ -36,17 +36,7 @@ public class DashboardViewModel extends ViewModel {
     public boolean isLogged() {
         return firebaseUserRepository.get() != null;
     }
-    public void recoverNote(Note note) {
-        firebaseNoteRepository.create(
-                Note.builder()
-                        .uuid(note.getUuid())
-                        .title(note.getTitle())
-                        .body(note.getBody())
-                        .updateTime(note.getUpdateTime())
-                        .build()
-                , DashboardFragment.getCurrentFolder()
-        );
-    }
+
     private MutableLiveData<Note> lastlyDeletedNote;
     public MutableLiveData<Note> getNote(String uuid) {
         lastlyDeletedNote = new MutableLiveData<>();

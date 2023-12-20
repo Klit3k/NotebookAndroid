@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.edu.wat.notebookv3.model.Folder;
 import pl.edu.wat.notebookv3.model.Note;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -118,30 +119,30 @@ public class FirebaseFolderRepository implements FolderRepository {
                 });
     }
 
-    public void moveNoteToFolder(String noteId, String folderId) {
-        firebaseFirestore.runTransaction(new Transaction.Function<Void>() {
-            @Nullable
-            @Override
-            public Void apply(@NonNull @NotNull Transaction transaction) throws FirebaseFirestoreException {
-
-                firebaseNoteRepository.get(noteId, new NoteRepository.NoteResultListener() {
-                    @Override
-                    public void onNoteResult(Note note) {
-                        firebaseNoteRepository.remove(noteId);
-                        firebaseNoteRepository.create(folderId, note);
-                        Log.d("TEST", "Przeniosłem " + noteId + " do folderu " + folderId);
-
-                    }
-
-                    @Override
-                    public void onNoteError(Exception e) {
-
-                    }
-                });
-                return null;
-            }
-        });
-    }
+//    public void moveNoteToFolder(String noteId, String folderId) {
+//        firebaseFirestore.runTransaction(new Transaction.Function<Void>() {
+//            @Nullable
+//            @Override
+//            public Void apply(@NonNull @NotNull Transaction transaction) throws FirebaseFirestoreException {
+//
+//                firebaseNoteRepository.get(noteId, new NoteRepository.NoteResultListener() {
+//                    @Override
+//                    public void onNoteResult(Note note) {
+//                        firebaseNoteRepository.remove(noteId);
+//                        firebaseNoteRepository.create(folderId, note);
+//                        Log.d("TEST", "Przeniosłem " + noteId + " do folderu " + folderId);
+//
+//                    }
+//
+//                    @Override
+//                    public void onNoteError(Exception e) {
+//
+//                    }
+//                });
+//                return null;
+//            }
+//        });
+//    }
 
     public Task<QuerySnapshot> getNoteListInFolder(String folderId) {
 
@@ -187,6 +188,15 @@ public class FirebaseFolderRepository implements FolderRepository {
         return folderListMutableLiveData;
     }
 
+
+
+//    public void getLastActivity() {
+//        this.firebaseFirestore
+//                .collection(USERS_PATH)
+//                .document(firebaseUserRepository.get().getUid())
+//                .collection(LOG_PATH)
+//                .
+//    }
 
 }
 

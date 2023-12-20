@@ -31,6 +31,8 @@
                 android:clickable="false"
                 android:orientation="vertical">
 
+
+<!--                app:menu="@menu/note_context_menu"-->
                 <com.google.android.material.appbar.MaterialToolbar
                     android:id="@+id/topAppBar"
                     android:layout_width="match_parent"
@@ -39,7 +41,7 @@
                     android:minHeight="?attr/actionBarSize"
                     android:scrollbarStyle="insideInset"
                     android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Surface"
-                    app:menu="@menu/note_context_menu"
+
                     app:title="page_title"
                     app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium"
                     app:titleTextColor="@color/md_theme_dark_onPrimary" />

@@ -1,6 +1,9 @@
 package pl.edu.wat.notebookv3.model.adapter;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
+import android.text.Html;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -60,6 +63,39 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
             }
         });
 
+        if(!holder.button.getText().equals(DashboardFragment.MAIN_FOLDER)) {
+            holder.button.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+
+                    builder
+                            .setTitle("Usuwanie folderu")
+                            .setMessage("Czy chcesz usunąć folder: \n" + holder.button.getText())
+                            .setPositiveButton("Usuń", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    folderRepository.remove(holder.button.getText().toString());
+                                    notifyItemRemoved(position);
+                                    if (DashboardFragment.getCurrentFolder().equals(holder.button.getText().toString())) {
+                                        DashboardFragment.setCurrentFolder(DashboardFragment.MAIN_FOLDER);
+                                        Navigation.findNavController(v)
+                                                .navigate(R.id.action_dashboardFragment_self);
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            })
+                            .setCancelable(false)
+                            .show();
+                    return true;
+                }
+            });
+        }
         if (holder.button.getText().equals(DashboardFragment.getCurrentFolder())) {
             holder.button.setIcon(ResourcesCompat.getDrawable(holder.view.getResources(), R.drawable.folder_special, null));
         } else holder.button.setIcon(ResourcesCompat.getDrawable(holder.view.getResources(), R.drawable.folder, null));

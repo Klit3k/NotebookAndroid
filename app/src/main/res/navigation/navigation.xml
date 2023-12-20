@@ -35,6 +35,11 @@
     <fragment android:id="@+id/accountFragment" android:name="pl.edu.wat.notebookv3.view.AccountFragment"
               android:label="fragment_account" tools:layout="@layout/fragment_account">
         <argument android:name="lastNoteDate" app:argType="string" app:nullable="true"/>
+        <action
+            android:id="@+id/action_accountFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment android:id="@+id/noteTakingFragment" android:name="pl.edu.wat.notebookv3.view.NoteTakingFragment"
               android:label="fragment_note_taking" tools:layout="@layout/fragment_note_taking">

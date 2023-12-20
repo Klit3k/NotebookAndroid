@@ -52,6 +52,7 @@ public class RegisterFragment extends Fragment {
                             .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                 @Override
                                 public void onSuccess(AuthResult authResult) {
+                                    viewModel.createFolders();
                                     Navigation.findNavController(v)
                                             .navigate(R.id.action_registerFragment_to_loginFragment);
                                 }

@@ -75,7 +75,7 @@
                         android:layout_marginLeft="35dp" android:layout_marginRight="35dp"
                 />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                         android:id="@+id/delete_account_button"
                         style="@style/Widget.Material3.Button.TextButton"
                         android:layout_width="250dp"
@@ -90,37 +90,6 @@
                 />
             </LinearLayout>
         </ScrollView>
-        <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" android:id="@+id/cardView" android:isScrollContainer="true"
-                android:nestedScrollingEnabled="true" android:visibility="gone">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="70dp"
-                    android:layout_marginRight="70dp" android:visibility="gone">
-
-                <Button
-                        android:id="@+id/share_history_button"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="200dp"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="20dp"
-                        android:text="Share history"
-                        android:textAlignment="textStart"
-                        android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="@+id/last_note_text"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="@+id/last_note_text"
-                        app:layout_constraintTop_toBottomOf="@+id/divider"/>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

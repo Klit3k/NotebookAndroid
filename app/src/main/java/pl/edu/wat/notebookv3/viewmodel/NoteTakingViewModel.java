@@ -7,7 +7,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import lombok.Getter;
 import pl.edu.wat.notebookv3.model.Note;
+import pl.edu.wat.notebookv3.model.Reminder;
 import pl.edu.wat.notebookv3.repository.FirebaseNoteRepository;
+import pl.edu.wat.notebookv3.repository.FirebaseReminderRepository;
 import pl.edu.wat.notebookv3.repository.NoteRepos;
 import pl.edu.wat.notebookv3.view.DashboardFragment;
 
@@ -20,9 +22,12 @@ public class NoteTakingViewModel extends ViewModel {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy, HH:mm:ss");
     @Getter
     FirebaseNoteRepository firebaseNoteRepository;
+    private FirebaseReminderRepository firebaseReminderRepository;
+
     NoteRepos noteRepos;
     public NoteTakingViewModel() {
         firebaseNoteRepository = new FirebaseNoteRepository();
+        firebaseReminderRepository = new FirebaseReminderRepository();
         noteRepos = new NoteRepos();
     }
 
@@ -54,6 +59,9 @@ public class NoteTakingViewModel extends ViewModel {
                         .updateTime(dtf.format(LocalDateTime.now()))
                         .build(),
                 DashboardFragment.getCurrentFolder());
+    }
+    public void createReminder(Reminder reminder) {
+        firebaseReminderRepository.create(reminder);
     }
 
     public void share() {

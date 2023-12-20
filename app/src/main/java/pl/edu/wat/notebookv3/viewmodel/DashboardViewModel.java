@@ -67,6 +67,14 @@ public class DashboardViewModel extends ViewModel {
     public MutableLiveData<List<Note>> getListNote() {
         return noteRepos.getList(DashboardFragment.getCurrentFolder());
     }
+
+    public void moveToTrash(String noteId) {
+
+        noteRepos.moveToTrash(noteId, DashboardFragment.getCurrentFolder());
+    }
+    public void transferNote(String noteId, String folder, String destinationFolder) {
+        noteRepos.moveToAnotherFolder(noteId, folder, destinationFolder);
+    }
     public MutableLiveData<List<Folder>> getListFolder() {
         return firebaseFolderRepository.getList(new FolderRepository.FolderListResultListener() {
             @Override
@@ -80,19 +88,8 @@ public class DashboardViewModel extends ViewModel {
             }
         });
     }
-    public void removeNote(String uuid) {
-        firebaseNoteRepository.get(uuid, new NoteRepository.NoteResultListener() {
-            @Override
-            public void onNoteResult(Note note) {
-
-            }
-
-            @Override
-            public void onNoteError(Exception e) {
-
-            }
-        });
-        firebaseNoteRepository.remove(uuid);
+    public void removeNote(String uuid, String currentFolder) {
+        noteRepos.remove(uuid, currentFolder);
     }
     public Task<DocumentSnapshot> existsFolder(String folderName) {
         return firebaseFolderRepository.getById(folderName);
@@ -104,15 +101,6 @@ public class DashboardViewModel extends ViewModel {
                             .notes(new ArrayList<>())
                             .build()
             );
-    }
-    public void addNoteToFolder() {
-        firebaseFolderRepository.addNoteToFolder(
-                Note.builder()
-                        .title("testowa1")
-                        .body("notatka1")
-                        .build()
-                , "2"
-        );
     }
     public void logout(View view) {
         firebaseUserRepository.logout();

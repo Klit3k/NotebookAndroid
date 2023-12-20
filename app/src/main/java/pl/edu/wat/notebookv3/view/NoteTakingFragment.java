@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -25,6 +27,7 @@ public class NoteTakingFragment extends Fragment {
     private TextInputEditText titleInputText;
     private NoteTakingViewModel noteTakingViewModel;
     private String tag;
+    boolean isStarred;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,12 +71,12 @@ public class NoteTakingFragment extends Fragment {
             if (args.getBody() != null) bodyInputText.setText(args.getBody());
             if (args.getTitle() != null) titleInputText.setText(args.getTitle());
             if (args.getTag() != null) tag = args.getTag();
+            isStarred = args.getStarred();
         }
 
         MaterialToolbar materialToolbar = view.findViewById(R.id.materialToolbar);
         materialToolbar.setOnMenuItemClickListener(menuClickItemListener());
         materialToolbar.setNavigationOnClickListener(onNavBackListener());
-
 
         return view;
     }
@@ -91,14 +94,16 @@ public class NoteTakingFragment extends Fragment {
                     noteTakingViewModel.createNote(title, body);
             }
 
-            NoteTakingFragmentDirections.ActionNoteTakingFragmentToDashboardFragment direction =
-                    NoteTakingFragmentDirections.actionNoteTakingFragmentToDashboardFragment(DashboardFragment.getCurrentFolder());
-
-
-            Navigation.findNavController(v)
-                    .navigate(
-                            direction
-                    );
+//
+//            NoteTakingFragmentDirections.ActionNoteTakingFragmentToDashboardFragment direction =
+//                    NoteTakingFragmentDirections.actionNoteTakingFragmentToDashboardFragment(DashboardFragment.getCurrentFolder());
+//
+//
+//            Navigation.findNavController(v)
+//                    .navigate(
+//                            direction
+//                    );
+            Navigation.findNavController(v).navigate(R.id.action_noteTakingFragment_to_dashboardFragment);
         };
     }
 
@@ -108,6 +113,15 @@ public class NoteTakingFragment extends Fragment {
             if (item.getItemId() == R.id.share_item) {
                 createShareDialog(getActivity()).show();
                 return true;
+            } else if (item.getItemId() == R.id.starNote) {
+                if (!isStarred) {
+                    item.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.star, null));
+                    Snackbar.make(getView(), "Usunięto z ważnych notatek.", Snackbar.LENGTH_SHORT).show();
+
+                } else {
+                   item.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.star_filled, null));
+                    Snackbar.make(getView(), "Dodano do ważnych notatek.", Snackbar.LENGTH_SHORT).show();
+                }
             }
             return item.getItemId() == R.id.reminder_item;
         };

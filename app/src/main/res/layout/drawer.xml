@@ -207,7 +207,7 @@
                             android:layout_marginLeft="16dp"
 
                             />
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/folder2"
                             style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="match_parent"

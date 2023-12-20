@@ -68,6 +68,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
 
         holder.time.setText(noteList.get(position).getUpdateTime());
         holder.view.setTag(noteList.get(position).getUuid());
+        holder.body.setTag(noteList.get(position).isStarred());
         holder.view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -89,6 +90,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
                         ,  noteList.get(position).getBody()
                         ,  noteList.get(position).getUuid()
                         , DashboardFragment.getCurrentFolder()
+                        , noteList.get(position).isStarred()
                 );
 
                 Navigation.findNavController( holder.view)
@@ -99,9 +101,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
 
         });
     }
-    public void updateList(List<Note> notes) {
+    public void updateList() {
         noteList.clear();
-        noteList.addAll(notes);
+        noteList.addAll(noteList);
         this.notifyDataSetChanged();
         Log.d("TEST", "Update list");
     }

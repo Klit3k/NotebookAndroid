@@ -42,6 +42,7 @@ public class NoteTakingViewModel extends ViewModel {
                         .build()
                 , DashboardFragment.getCurrentFolder()
         );
+
     }
 
     public void updateNote(String uid, String title, String body) {

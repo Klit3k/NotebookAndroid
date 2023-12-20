@@ -7,8 +7,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -37,9 +36,13 @@ import pl.edu.wat.notebookv3.model.*;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.adapter.FolderAdapter;
 import pl.edu.wat.notebookv3.model.adapter.NoteAdapter;
+import pl.edu.wat.notebookv3.repository.NoteRepos;
 import pl.edu.wat.notebookv3.viewmodel.DashboardViewModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class DashboardFragment extends Fragment {
@@ -55,8 +58,8 @@ public class DashboardFragment extends Fragment {
     private FolderAdapter folderAdapter;
     private MutableLiveData<Note> lastNote;
     private ImageView imageView;
-    private DashboardFragmentArgs args;
     MaterialToolbar materialToolbar;
+    List<Folder> folderList;
     @Getter
     @Setter
     private static String currentFolder = MAIN_FOLDER;
@@ -79,12 +82,12 @@ public class DashboardFragment extends Fragment {
 
         materialToolbar = view.findViewById(R.id.topAppBar);
 
-        if (getArguments() != null && !getArguments().isEmpty()) {
-            args = DashboardFragmentArgs.fromBundle(getArguments());
-            if (args.getFolder() != null) {
-                setCurrentFolder(args.getFolder());
-            }
-        }
+//        if (getArguments() != null && !getArguments().isEmpty()) {
+//            args = DashboardFragmentArgs.fromBundle(getArguments());
+//            if (args.getFolder() != null) {
+//                setCurrentFolder(args.getFolder());
+//            }
+//        }
 
 
         /*
@@ -117,6 +120,21 @@ public class DashboardFragment extends Fragment {
                     .navigate(
                             direction
                     );
+        });
+        view.findViewById(R.id.importantNotes).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DashboardFragment.setCurrentFolder(NoteRepos.STARRED_PATH);
+                Navigation.findNavController(v).navigate(R.id.action_dashboardFragment_self);
+            }
+        });
+        view.findViewById(R.id.trashedNotes).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DashboardFragment.setCurrentFolder(NoteRepos.TRASH_PATH);
+
+                Navigation.findNavController(v).navigate(R.id.action_dashboardFragment_self);
+            }
         });
         view.findViewById(R.id.navLogout).setOnClickListener(v -> {
             viewModel.logout(view);
@@ -167,6 +185,7 @@ public class DashboardFragment extends Fragment {
             folderAdapter = new FolderAdapter(folderList);
             folderRecycler.setAdapter(folderAdapter);
             folderAdapter.notifyDataSetChanged();
+            this.folderList = folderList;
         });
 
         /*
@@ -195,32 +214,30 @@ public class DashboardFragment extends Fragment {
                              Note displaying
            ============================================================
         */
-
+        imageView = view.findViewById(R.id.empty_recycler);
 
         lastNote = new MutableLiveData<>();
         progressDialog = new ProgressDialog(getContext());
-
         noteRecycler = view.findViewById(R.id.noteRecyclerView);
         noteRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         noteRecycler.setHasFixedSize(true);
 
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(noteRecycler);
-        imageView = view.findViewById(R.id.empty_recycler);
 
-        notes.observe(getViewLifecycleOwner(), new Observer<List<Note>>() {
+
+        viewModel.getListNote().observe(getViewLifecycleOwner(), new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> noteList) {
                 progressDialog.dismiss();
                 noteAdapter = new NoteAdapter(noteList);
                 noteRecycler.setAdapter(noteAdapter);
-
-                if (noteList.isEmpty()) {
-                    noteRecycler.setVisibility(View.GONE);
+                if (noteAdapter.getItemCount() == 0) {
+                    noteRecycler.setVisibility(View.INVISIBLE);
                     imageView.setVisibility(View.VISIBLE);
                 } else {
                     noteRecycler.setVisibility(View.VISIBLE);
-                    imageView.setVisibility(View.GONE);
+                    imageView.setVisibility(View.INVISIBLE);
                     lastNote.postValue(noteList.stream().findFirst().orElse(null));
                 }
                 Log.d("TEST::lista", "Aktualnie pobranych notatek: " + noteList.size());
@@ -231,7 +248,7 @@ public class DashboardFragment extends Fragment {
             public void onClick(View v) {
                 DashboardFragmentDirections.ActionDashboardFragmentToNoteTakingFragment direction =
                         DashboardFragmentDirections.actionDashboardFragmentToNoteTakingFragment(
-                                null, null, null, getCurrentFolder()
+                                null, null, null, getCurrentFolder(), false
                         );
 
                 Navigation.findNavController(view)
@@ -244,7 +261,7 @@ public class DashboardFragment extends Fragment {
     }
 
 
-    ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+    ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
         @Override
         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
             return false;
@@ -252,30 +269,79 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            if (direction == ItemTouchHelper.LEFT) {
+                Log.d("Test:onSwiped", "Left");
+                String item = viewHolder.itemView.getTag().toString();
+                if (getCurrentFolder().equals(NoteRepos.TRASH_PATH)) {
+                    viewModel.removeNote(item, getCurrentFolder());
+                    Snackbar.make(getView(), "Notatka została usunięta.", Snackbar.LENGTH_SHORT).show();
+                }
+                else {
+                    viewModel.moveToTrash(item);
+                    Snackbar.make(getView(), "Notatka została przeniesiona do kosza.", Snackbar.LENGTH_SHORT).show();
+                }
+            } else {
+                Log.d("Test:onSwiped", "Right");
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                ;
+                List<String> s = folderList.stream()
+                        .map(e -> e.getName())
+                        .filter(e -> !e.equals(NoteRepos.TRASH_PATH))
+                        .filter(e -> !e.equals(NoteRepos.STARRED_PATH))
+                        .collect(Collectors.toList());
 
-            viewModel.getNote(viewHolder.itemView.getTag().toString())
-                    .observe(getActivity(), note -> {
-                        Snackbar.make(getView(), "Notatka usunięta.", Snackbar.LENGTH_LONG)
-                                .setAction("Cofnij", view -> {
-                                    viewModel.recoverNote(note);
-                                    Snackbar.make(getView(), "Notatka została przywrócona.", Snackbar.LENGTH_SHORT);
-                                    noteAdapter.notifyDataSetChanged();
-                                }).show();
-                        viewModel.removeNote(viewHolder.itemView.getTag().toString());
-                        noteAdapter.notifyDataSetChanged();
-                    });
+                final ArrayAdapter<String> adp = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_spinner_item, s);
+                final Spinner sp = new Spinner(getActivity());
+                sp.setLayoutParams(new LinearLayout.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT));
+                sp.setPadding(20, 5, 20, 5);
+                sp.setAdapter(adp);
 
+                String pickFolder = "";
+
+
+                builder
+                        .setTitle("Wybierz folder")
+                        .setView(sp)
+                        .setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        })
+                        .setPositiveButton("Przenieś", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.d("Test:onClick", "transfer: " + getCurrentFolder()+ " -> "+ sp.getSelectedItem().toString() + " tag: "+viewHolder.itemView.getTag().toString());
+
+                                viewModel.transferNote(viewHolder.itemView.getTag().toString(), getCurrentFolder(), sp.getSelectedItem().toString());
+
+                            }
+                        });
+                builder.show();
+            }
         }
 
         public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
-            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                    .addBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_theme_dark_error))
-                    .addActionIcon(R.drawable.delete)
-                    .addCornerRadius(1, 3)
-                    .create()
-                    .decorate();
+            if (dX <  0 && isCurrentlyActive) {
+                RecyclerViewSwipeDecorator.Builder builder = new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                builder.addBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_theme_light_tertiary))
+                        .addActionIcon(R.drawable.delete)
+                        .addCornerRadius(1, 3)
+                        .create()
+                        .decorate();
 
+            } else if (dX > 0 && isCurrentlyActive){
+                new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                        .addBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_theme_light_surfaceTint))
+                        .addActionIcon(R.drawable.drive_file_move)
+                        .addCornerRadius(1, 3)
+                        .create()
+                        .decorate();
+            } else {
+
+            }
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
 
@@ -283,7 +349,7 @@ public class DashboardFragment extends Fragment {
 
     public static void refreshAdapter() {
         if (noteAdapter != null) {
-            noteAdapter.notifyDataSetChanged();
+            noteAdapter.updateList();
         }
     }
 }

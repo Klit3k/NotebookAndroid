@@ -26,7 +26,6 @@
         <action android:id="@+id/action_dashboardFragment_to_noteTakingFragment"
                 app:destination="@id/noteTakingFragment"/>
         <action android:id="@+id/action_dashboardFragment_self" app:destination="@id/dashboardFragment"/>
-        <argument android:name="folder" app:argType="string" />
         <action
             android:id="@+id/action_dashboardFragment_to_loginFragment"
             app:destination="@id/loginFragment"
@@ -47,5 +46,8 @@
         <argument
             android:name="currentFolder"
             app:argType="string" />
+        <argument
+            android:name="starred"
+            app:argType="boolean" />
     </fragment>
 </navigation>

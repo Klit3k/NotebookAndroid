@@ -105,24 +105,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/coordinatorLayout">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/folderRecyclerView2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="18dp"
-                    android:layout_marginEnd="18dp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
                 <ImageView
                     android:id="@+id/empty_recycler"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="50dp"
                     android:src="@drawable/no_content"
-                    android:visibility="gone"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -137,7 +126,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/folderRecyclerView2" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <SearchView
                     android:layout_width="0dp"
@@ -349,7 +338,7 @@
                             android:layout_marginStart="70dp"
                             android:layout_weight="1"
                             android:tint="@color/md_theme_dark_secondaryContainer"
-                            app:srcCompat="@drawable/baseline_add_circle_outline_24" />
+                            app:srcCompat="@drawable/create_new_folder" />
 
                     </LinearLayout>
 

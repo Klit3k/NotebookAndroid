@@ -38,7 +38,11 @@ import pl.edu.wat.notebookv3.util.SafenoteService;
 import pl.edu.wat.notebookv3.viewmodel.NoteTakingViewModel;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -255,6 +259,7 @@ public class NoteTakingFragment extends Fragment {
                 .setMinute(0)
                 .setTitleText("Wybierz godzinę alarmu")
                 .build();
+        MaterialDatePicker<Long> datePicker = datePickerBuilder.build();
 
         timePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
             @Override
@@ -265,18 +270,23 @@ public class NoteTakingFragment extends Fragment {
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
 
+                LocalDateTime date = Instant.ofEpochMilli(datePicker.getSelection())
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime();
+
+                calendar.set(Calendar.YEAR, date.getYear());
+                calendar.set(Calendar.MONTH, date.getMonthValue()-1);
+                calendar.set(Calendar.DAY_OF_MONTH, date.getDayOfMonth());
                 setAlarm(titleInputText.getText().toString()
-                        , LocalDateTime.ofInstant(calendar.toInstant()
-                                , calendar.getTimeZone().toZoneId())
                         , calendar.getTimeInMillis());
             }
         });
-        MaterialDatePicker<Long> datePicker = datePickerBuilder.build();
         datePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener() {
             @Override
             public void onPositiveButtonClick(Object selection) {
-                calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(datePicker.getSelection());
+                Long select = (Long) selection;
+
+
                 timePicker.show(getParentFragmentManager(), "general");
 
             }
@@ -287,13 +297,16 @@ public class NoteTakingFragment extends Fragment {
     }
 
     @SuppressLint("ScheduleExactAlarm")
-    private void setAlarm(String message, LocalDateTime date, long time) {
+    private void setAlarm(String message, long time) {
+        LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
+
         Reminder reminder = Reminder.builder()
                 .id(UUID.randomUUID().toString())
                 .message(message)
                 .remindDate(date.toString())
                 .build();
         noteTakingViewModel.createReminder(reminder);
+        Log.d("Test:Calendar", date.format(DateTimeFormatter.ISO_DATE_TIME));
 
         alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlarmReceiver.class);

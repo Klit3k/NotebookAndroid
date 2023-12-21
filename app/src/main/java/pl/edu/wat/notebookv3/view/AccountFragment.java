@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -22,6 +23,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.DefaultValueFormatter;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import pl.edu.wat.notebookv3.R;
@@ -180,7 +182,21 @@ public class AccountFragment extends Fragment {
                         builder.create().show();
                     }
                 });
+        /*===================================================================
+         *              Top bar
+         ===================================================================*/
+        MaterialToolbar toolbar = view.findViewById(R.id.materialToolbar);
+        toolbar.setNavigationOnClickListener(onNavBackListener());
         return view;
+    }
+
+
+
+    @NonNull
+    private View.OnClickListener onNavBackListener() {
+        return v -> {
+            Navigation.findNavController(v).navigate(R.id.action_accountFragment_to_dashboardFragment);
+        };
     }
 
 

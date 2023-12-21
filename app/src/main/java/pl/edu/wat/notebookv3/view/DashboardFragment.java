@@ -122,6 +122,13 @@ public class DashboardFragment extends Fragment {
                             direction
                     );
         });
+        view.findViewById(R.id.reminders).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(v).navigate(R.id.action_dashboardFragment_to_reminderFragment);
+            }
+        });
+
         view.findViewById(R.id.importantNotes).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

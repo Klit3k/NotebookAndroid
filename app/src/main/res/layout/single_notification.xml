@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card"
+            style="@style/Widget.Material3.CardView.Outlined"
+            android:layout_width="match_parent"
+
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="#333333"
+            app:strokeWidth="0.75dp">
+
+            <LinearLayout
+                android:id="@+id/fragmentCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/md_theme_light_background"
+                android:clickable="false"
+                android:orientation="vertical"
+                android:paddingBottom="20dp"
+
+                >
+
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+
+                    android:layout_height="40dp"
+                    android:minHeight="?attr/actionBarSize"
+                    android:scrollbarStyle="insideInset"
+                    android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Surface"
+
+                    app:title="page_title"
+                    app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    app:titleTextColor="@color/md_theme_dark_onPrimary" />
+
+                <TextView
+                    android:id="@+id/body_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:maxLines="1"
+                    android:text="Data: time_text"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <!-- Media -->
+
+                <!-- Buttons -->
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

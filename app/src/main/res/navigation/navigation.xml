@@ -31,6 +31,9 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_reminderFragment"
+            app:destination="@id/reminderFragment" />
     </fragment>
     <fragment android:id="@+id/accountFragment" android:name="pl.edu.wat.notebookv3.view.AccountFragment"
               android:label="fragment_account" tools:layout="@layout/fragment_account">
@@ -40,6 +43,9 @@
             app:destination="@id/loginFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_accountFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
     </fragment>
     <fragment android:id="@+id/noteTakingFragment" android:name="pl.edu.wat.notebookv3.view.NoteTakingFragment"
               android:label="fragment_note_taking" tools:layout="@layout/fragment_note_taking">
@@ -54,5 +60,14 @@
         <argument
             android:name="starred"
             app:argType="boolean" />
+    </fragment>
+    <fragment
+        android:id="@+id/reminderFragment"
+        android:name="pl.edu.wat.notebookv3.view.ReminderFragment"
+        android:label="fragment_reminder"
+        tools:layout="@layout/fragment_reminder" >
+        <action
+            android:id="@+id/action_reminderFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
     </fragment>
 </navigation>

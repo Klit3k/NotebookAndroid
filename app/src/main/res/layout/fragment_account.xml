@@ -10,6 +10,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navMenu"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/materialToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#0000FFFF"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="@style/Widget.Material3.Toolbar"
+                app:navigationIcon="@drawable/arrow_back_24px" />
+
+        </com.google.android.material.bottomnavigation.BottomNavigationView>
+
         <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:isScrollContainer="true"

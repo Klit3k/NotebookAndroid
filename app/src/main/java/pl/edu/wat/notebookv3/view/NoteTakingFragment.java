@@ -6,10 +6,18 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
+import android.text.Editable;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ImageSpan;
+import android.text.style.ReplacementSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +26,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -30,21 +39,39 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
+import io.noties.markwon.Markwon;
+import io.noties.markwon.MarkwonSpansFactory;
+import io.noties.markwon.SoftBreakAddsNewLinePlugin;
+import io.noties.markwon.SpanFactory;
+import io.noties.markwon.editor.*;
+import io.noties.markwon.editor.handler.EmphasisEditHandler;
+import io.noties.markwon.editor.handler.StrongEmphasisEditHandler;
+import io.noties.markwon.image.AsyncDrawable;
+import io.noties.markwon.image.ImagesPlugin;
+import io.noties.markwon.image.data.DataUriSchemeHandler;
+import io.noties.markwon.image.network.NetworkSchemeHandler;
+import io.noties.markwon.image.network.OkHttpNetworkSchemeHandler;
+import io.noties.markwon.linkify.LinkifyPlugin;
+import org.commonmark.node.Image;
+import org.commonmark.node.Link;
+import org.jetbrains.annotations.NotNull;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Reminder;
 import pl.edu.wat.notebookv3.model.safenote.SafenoteResponse;
 import pl.edu.wat.notebookv3.util.AlarmReceiver;
 import pl.edu.wat.notebookv3.util.SafenoteService;
+import pl.edu.wat.notebookv3.util.markwonhandlers.HeadingEditHandler;
+import pl.edu.wat.notebookv3.util.markwonhandlers.LinkEditHandler;
 import pl.edu.wat.notebookv3.viewmodel.NoteTakingViewModel;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 
 import static android.content.Context.ALARM_SERVICE;
 
@@ -55,6 +82,7 @@ public class NoteTakingFragment extends Fragment {
     private NoteTakingViewModel noteTakingViewModel;
     private String tag;
     boolean isStarred;
+    private Markwon markwon;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -153,13 +181,26 @@ public class NoteTakingFragment extends Fragment {
 
         return builder.create();
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_note_taking, container, false);
+        markwon = Markwon.create(getContext());
+
         bodyInputText = view.findViewById(R.id.body_input_text);
         titleInputText = view.findViewById(R.id.title_input_text);
+        /* Markdown */
+        markwon = Markwon.builder(getContext())
+                .usePlugin(ImagesPlugin.create())
+                .build();
+
+        MarkwonEditor editor = MarkwonEditor.create(markwon);
+        bodyInputText.addTextChangedListener(MarkwonEditorTextWatcher.withPreRender(
+                editor,
+                Executors.newCachedThreadPool(),
+                bodyInputText));
+
+        /*=========*/
         noteTakingViewModel = new ViewModelProvider(this).get(NoteTakingViewModel.class);
         createNotificationChannel();
         if (getArguments() != null && !getArguments().isEmpty()) {
@@ -190,15 +231,6 @@ public class NoteTakingFragment extends Fragment {
                     noteTakingViewModel.createNote(title, body);
             }
 
-//
-//            NoteTakingFragmentDirections.ActionNoteTakingFragmentToDashboardFragment direction =
-//                    NoteTakingFragmentDirections.actionNoteTakingFragmentToDashboardFragment(DashboardFragment.getCurrentFolder());
-//
-//
-//            Navigation.findNavController(v)
-//                    .navigate(
-//                            direction
-//                    );
             Navigation.findNavController(v).navigate(R.id.action_noteTakingFragment_to_dashboardFragment);
         };
     }
@@ -220,6 +252,9 @@ public class NoteTakingFragment extends Fragment {
                 }
             } else if (item.getItemId() == R.id.reminder_item) {
                 showTimePicker();
+            } else if (item.getItemId() == R.id.no_md) {
+            } else if (item.getItemId() == R.id.md) {
+                markwon.setMarkdown(bodyInputText, bodyInputText.getText().toString());
             }
             return item.getItemId() == R.id.reminder_item;
         };
@@ -305,7 +340,6 @@ public class NoteTakingFragment extends Fragment {
                 .message(message)
                 .remindDate(date.toString())
                 .build();
-        noteTakingViewModel.createReminder(reminder);
         Log.d("Test:Calendar", date.format(DateTimeFormatter.ISO_DATE_TIME));
 
         alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
@@ -315,9 +349,20 @@ public class NoteTakingFragment extends Fragment {
         intent.putExtra("id", reminder.getId());
 
         pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
+
+
+//        Map<String, Object> data = new HashMap<>();
+//        data.put("packageName", getContext().getPackageName());
+//        data.put("className", AlarmReceiver.class.getName());
+//
+//        reminder.setPendingIntent(data);
+        noteTakingViewModel.createReminder(reminder);
+
 //        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
         alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(time, pendingIntent), pendingIntent);
 
         Toast.makeText(getContext(), "Ustawiono alarm", Toast.LENGTH_SHORT).show();
     }
+
+
 }

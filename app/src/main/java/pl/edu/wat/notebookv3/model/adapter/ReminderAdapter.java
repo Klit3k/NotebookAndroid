@@ -1,8 +1,13 @@
 package pl.edu.wat.notebookv3.model.adapter;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Reminder;
 import pl.edu.wat.notebookv3.repository.FirebaseReminderRepository;
+import pl.edu.wat.notebookv3.util.AlarmReceiver;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -103,5 +109,18 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
             time = view.findViewById(R.id.body_text);
 
         }
+    }
+
+    public void cancelAlarm(Context context, AlarmManager alarmManager) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if(alarmManager == null) {
+            alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        }
+
+        alarmManager.cancel(pendingIntent);
+
+        Log.d("Test:cancelAlarm", "Anulowano notyfikacje");
     }
 }

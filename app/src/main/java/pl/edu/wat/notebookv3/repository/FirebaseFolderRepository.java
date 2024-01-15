@@ -25,12 +25,10 @@ public class FirebaseFolderRepository implements FolderRepository {
     private final String NOTES_PATH = "Notes";
     private final FirebaseFirestore firebaseFirestore;
     private final FirebaseUserRepository firebaseUserRepository;
-    private final FirebaseNoteRepository firebaseNoteRepository;
 
     public FirebaseFolderRepository() {
         this.firebaseFirestore = FirebaseFirestore.getInstance();
         this.firebaseUserRepository = new FirebaseUserRepository();
-        this.firebaseNoteRepository = new FirebaseNoteRepository();
     }
 
     @Override

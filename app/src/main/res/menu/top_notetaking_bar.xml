@@ -7,6 +7,7 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/logo"
         android:title="MD"
+        android:visible="false"
         app:showAsAction="always" />
     <item
         android:id="@+id/no_md"
@@ -14,6 +15,7 @@
         android:layout_height="wrap_content"
         android:icon="@drawable/star"
         android:title="NO MD"
+        android:visible="false"
         app:showAsAction="always" />
     <item
         android:id="@+id/starNote"
@@ -24,17 +26,26 @@
         android:title="Ważne"
         app:showAsAction="always" />
     <item
+        android:id="@+id/add_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/image"
+        android:title="Add Image"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/share_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/share"
         android:title="Share"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/reminder_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/notifications"
         android:title="Reminder"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+
+
 </menu>

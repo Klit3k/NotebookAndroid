@@ -6,18 +6,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
-import android.text.Editable;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ImageSpan;
-import android.text.style.ReplacementSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +22,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
@@ -40,28 +37,15 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 import io.noties.markwon.Markwon;
-import io.noties.markwon.MarkwonSpansFactory;
-import io.noties.markwon.SoftBreakAddsNewLinePlugin;
-import io.noties.markwon.SpanFactory;
-import io.noties.markwon.editor.*;
-import io.noties.markwon.editor.handler.EmphasisEditHandler;
-import io.noties.markwon.editor.handler.StrongEmphasisEditHandler;
-import io.noties.markwon.image.AsyncDrawable;
+import io.noties.markwon.editor.MarkwonEditor;
+import io.noties.markwon.editor.MarkwonEditorTextWatcher;
 import io.noties.markwon.image.ImagesPlugin;
-import io.noties.markwon.image.data.DataUriSchemeHandler;
-import io.noties.markwon.image.network.NetworkSchemeHandler;
-import io.noties.markwon.image.network.OkHttpNetworkSchemeHandler;
-import io.noties.markwon.linkify.LinkifyPlugin;
-import org.commonmark.node.Image;
-import org.commonmark.node.Link;
-import org.jetbrains.annotations.NotNull;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Reminder;
+import pl.edu.wat.notebookv3.model.adapter.ImageAdapter;
 import pl.edu.wat.notebookv3.model.safenote.SafenoteResponse;
 import pl.edu.wat.notebookv3.util.AlarmReceiver;
 import pl.edu.wat.notebookv3.util.SafenoteService;
-import pl.edu.wat.notebookv3.util.markwonhandlers.HeadingEditHandler;
-import pl.edu.wat.notebookv3.util.markwonhandlers.LinkEditHandler;
 import pl.edu.wat.notebookv3.viewmodel.NoteTakingViewModel;
 
 import java.io.IOException;
@@ -69,8 +53,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 import static android.content.Context.ALARM_SERVICE;
@@ -78,15 +61,20 @@ import static android.content.Context.ALARM_SERVICE;
 public class NoteTakingFragment extends Fragment {
     private NoteTakingFragmentArgs args;
     private TextInputEditText bodyInputText;
+    private List<String> imageUrls;
     private TextInputEditText titleInputText;
     private NoteTakingViewModel noteTakingViewModel;
     private String tag;
     boolean isStarred;
     private Markwon markwon;
+    private RecyclerView imageRecyclerView;
+    private ImageAdapter imageAdapter;
 
+    private ProgressDialog progressDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        imageUrls = new ArrayList<>();
     }
 
     public AlertDialog createShareDialog(Activity activity) {
@@ -119,6 +107,9 @@ public class NoteTakingFragment extends Fragment {
                 .setPositiveButton("Udostępnij !", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        progressDialog = new ProgressDialog(getContext());
+                        progressDialog.setMessage("Przygotowywanie");
+                        progressDialog.show();
                         AlertDialog.Builder shareBuilder = new AlertDialog.Builder(getContext());
                         shareBuilder.setTitle("Link do wpisu");
                         View customMessage = getLayoutInflater().inflate(R.layout.fragment_share_dialog, null);
@@ -162,6 +153,7 @@ public class NoteTakingFragment extends Fragment {
                                             .setPositiveButton("OK", (dialog12, which12) -> {
 
                                             });
+                                    progressDialog.dismiss();
                                     shareBuilder.show();
                                 });
                             } catch (IOException e) {
@@ -181,6 +173,7 @@ public class NoteTakingFragment extends Fragment {
 
         return builder.create();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -215,6 +208,42 @@ public class NoteTakingFragment extends Fragment {
         materialToolbar.setOnMenuItemClickListener(menuClickItemListener());
         materialToolbar.setNavigationOnClickListener(onNavBackListener());
 
+
+        /*
+                Image recyclerview
+         */
+        imageRecyclerView = view.findViewById(R.id.recyclerView);
+        imageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        imageRecyclerView.setHasFixedSize(true);
+
+        if (tag == null) {
+            tag = UUID.randomUUID().toString();
+            noteTakingViewModel.createNote(
+                    tag,
+                    titleInputText.getText().toString(),
+                    bodyInputText.getText().toString()
+            );
+
+        }
+
+        imageAdapter = new ImageAdapter(new ArrayList<>(), tag, DashboardFragment.getCurrentFolder());
+
+        noteTakingViewModel.getImages(tag, args.getCurrentFolder()).observe(getViewLifecycleOwner(), new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> imagesUrl) {
+                imageUrls = imagesUrl;
+                imageAdapter = new ImageAdapter(imagesUrl, tag, DashboardFragment.getCurrentFolder());
+                imageRecyclerView.setAdapter(imageAdapter);
+
+                if (imageAdapter.getItemCount() == 0) {
+                    imageRecyclerView.setVisibility(View.GONE);
+                } else {
+                    imageRecyclerView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
         return view;
     }
 
@@ -226,7 +255,7 @@ public class NoteTakingFragment extends Fragment {
             Log.d("Test", "currentFolder = " + args.getCurrentFolder());
             if (!body.isEmpty()) {
                 if (tag != null)
-                    noteTakingViewModel.updateNote(tag, title, body);
+                    noteTakingViewModel.updateNote(tag, title, body, imageUrls);
                 else
                     noteTakingViewModel.createNote(title, body);
             }
@@ -255,14 +284,65 @@ public class NoteTakingFragment extends Fragment {
             } else if (item.getItemId() == R.id.no_md) {
             } else if (item.getItemId() == R.id.md) {
                 markwon.setMarkdown(bodyInputText, bodyInputText.getText().toString());
+            } else if (item.getItemId() == R.id.add_image) {
+                showAddImage();
             }
             return item.getItemId() == R.id.reminder_item;
         };
     }
 
+    private void showAddImage() {
+        ImagePicker.with(this)
+                .crop()                    //Crop image(Optional), Check Customization for more option
+                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+                .start();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (resultCode) {
+            case Activity.RESULT_OK:
+                if (data != null && data.getData() != null) {
+                    progressDialog = new ProgressDialog(getContext());
+                    progressDialog.setMessage("Dodawanie obrazu");
+                    progressDialog.show();
+
+                    noteTakingViewModel.uploadImage(tag, data.getData())
+                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    Snackbar.make(getView(), "Obraz został dodany pomyślnie.", Snackbar.LENGTH_SHORT).show();
+                                    if(imageUrls != null)
+                                        imageUrls.add(uri.toString());
+                                    else
+                                        imageUrls = new ArrayList<>(Arrays.asList(uri.toString()));
+
+                                    noteTakingViewModel.updateImage(
+                                            tag,
+                                            titleInputText.getText().toString(),
+                                            bodyInputText.getText().toString(),
+                                            imageUrls
+                                    );
+                                    progressDialog.dismiss();
+                                }
+                            });
+
+                }
+                break;
+            case ImagePicker.RESULT_ERROR:
+                Snackbar.make(getView(), "ERROR", Snackbar.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
+    }
+
     /*===========================================
-                     Notifications
-     ===========================================*/
+                         Notifications
+         ===========================================*/
     private MaterialTimePicker timePicker;
     private Calendar calendar;
     private AlarmManager alarmManager;
@@ -281,11 +361,12 @@ public class NoteTakingFragment extends Fragment {
 
         }
     }
+
     private MaterialDatePicker.Builder<Long> datePickerBuilder;
+
     private void showTimePicker() {
         datePickerBuilder = MaterialDatePicker.Builder
                 .datePicker();
-
 
 
         timePicker = new MaterialTimePicker.Builder()
@@ -310,7 +391,7 @@ public class NoteTakingFragment extends Fragment {
                         .toLocalDateTime();
 
                 calendar.set(Calendar.YEAR, date.getYear());
-                calendar.set(Calendar.MONTH, date.getMonthValue()-1);
+                calendar.set(Calendar.MONTH, date.getMonthValue() - 1);
                 calendar.set(Calendar.DAY_OF_MONTH, date.getDayOfMonth());
                 setAlarm(titleInputText.getText().toString()
                         , calendar.getTimeInMillis());

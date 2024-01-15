@@ -49,6 +49,11 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.google.code.gson:gson:2.10.1'
 
+    implementation 'com.github.chathuralakmal:AndroidImagePopup:1.2.2'
+    implementation 'com.github.dhaval2404:imagepicker:2.1'
+    implementation 'androidx.activity:activity-ktx:1.8.2'
+    implementation 'androidx.fragment:fragment-ktx:1.6.2'
+    implementation 'com.google.firebase:firebase-storage:20.3.0'
 
     /* MARKDOWN */
     final def markwon_version = '4.6.2'

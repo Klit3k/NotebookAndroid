@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class FirebaseNoteRepository implements NoteRepository {
 
     private final FirebaseFirestore firebaseFirestore;

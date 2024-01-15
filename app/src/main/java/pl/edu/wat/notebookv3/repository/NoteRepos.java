@@ -1,10 +1,11 @@
 package pl.edu.wat.notebookv3.repository;
 
-import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.*;
+import com.google.firebase.firestore.EventListener;
 import pl.edu.wat.notebookv3.model.ActivityLog;
 import pl.edu.wat.notebookv3.model.Folder;
 import pl.edu.wat.notebookv3.model.Note;
@@ -12,9 +13,8 @@ import pl.edu.wat.notebookv3.model.OperationType;
 import pl.edu.wat.notebookv3.view.DashboardFragment;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class NoteRepos {
     private static final String LOG_PATH = "Logs";
@@ -37,8 +37,8 @@ public class NoteRepos {
         this.firebaseUserRepository = new FirebaseUserRepository();
     }
 
-    public void create(Note note, String folderName) {
-        this.firebaseFolderRepository
+    public Task<DocumentSnapshot> create(Note note, String folderName) {
+        Task<DocumentSnapshot> snapshotTask = this.firebaseFolderRepository
                 .getById(folderName)
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -63,7 +63,7 @@ public class NoteRepos {
                     }
                 });
         logActivity(OperationType.CREATE);
-
+        return snapshotTask;
     }
 
     public void moveToTrash(String noteId, String folderName) {
@@ -95,17 +95,21 @@ public class NoteRepos {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
                             Folder folder = documentSnapshot.toObject(Folder.class);
-                            Note noteX = folder.getNotes().stream()
-                                    .filter(note1 -> note1.getUuid().equals(note.getUuid()))
-                                    .findFirst()
-                                    .get();
+                            boolean isPresent = folder.getNotes().stream()
+                                    .anyMatch(note1 -> note1.getUuid().equals(note.getUuid()));
+                            if(isPresent) {
+                                Note noteX = folder.getNotes().stream()
+                                        .filter(note1 -> note1.getUuid().equals(note.getUuid()))
+                                        .findFirst()
+                                        .get();
 
-                            folder.getNotes().remove(noteX);
-                            folder.getNotes().add(note);
+                                folder.getNotes().remove(noteX);
+                                folder.getNotes().add(note);
 
 
-                            firebaseFolderRepository
-                                    .update(folderName, folder);
+                                firebaseFolderRepository
+                                        .update(folderName, folder);
+                            }
                         } else {
                             if (folderName.equals(MAIN_PATH)) {
                                 Folder folder = Folder
@@ -122,6 +126,54 @@ public class NoteRepos {
                 });
         logActivity(OperationType.UPDATE);
 
+    }
+    public void updateImage(String uid, String title, String body, List<String> imageUrls) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy, HH:mm:ss");
+
+        String date = dtf.format(LocalDateTime.now());
+        if(title.trim().isEmpty()) title = date;
+        update(
+                Note.builder()
+                        .title(title)
+                        .body(body)
+                        .uuid(uid)
+                        .updateTime(date)
+                        .imageUrl(imageUrls)
+                        .build(),
+                DashboardFragment.getCurrentFolder());
+    }
+    public void updateImage(String uid, String folderName, List<String> imageUrls) {
+        this.firebaseFolderRepository
+                .getById(folderName)
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            Folder folder = documentSnapshot.toObject(Folder.class);
+                            boolean isPresent = folder.getNotes().stream()
+                                    .anyMatch(note1 -> note1.getUuid().equals(uid));
+                            if(isPresent) {
+                                Note noteX = folder.getNotes().stream()
+                                        .filter(note1 -> note1.getUuid().equals(uid))
+                                        .findFirst()
+                                        .get();
+
+
+                                folder.getNotes().remove(noteX);
+
+                                noteX.getImageUrl().clear();
+                                noteX.getImageUrl().addAll(imageUrls);
+
+                                folder.getNotes().add(noteX);
+
+
+                                firebaseFolderRepository
+                                        .update(folderName, folder);
+                            }
+                        }
+
+                    }
+                });
     }
     public  void remove(String uuid, String folderName) {
 
@@ -229,6 +281,32 @@ public class NoteRepos {
 
         return logs;
     }
+
+    public MutableLiveData<List<String>> getImages(String noteId, String currentFolder) {
+        MutableLiveData<List<String>> imagesListMutableLiveData = new MutableLiveData<>();
+        this.firebaseFirestore.collection(USERS_PATH)
+                .document(firebaseUserRepository.get().getUid())
+                .collection(FOLDER_PATH)
+                .document(currentFolder)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable @org.jetbrains.annotations.Nullable DocumentSnapshot documentSnapshot, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+                        Folder folder = documentSnapshot.toObject(Folder.class);
+                        boolean isPresent = folder.getNotes().stream()
+                                .anyMatch(note1 -> note1.getUuid().equals(noteId));
+
+                        if(isPresent) {
+                            Note noteX = folder.getNotes().stream()
+                                    .filter(note1 -> note1.getUuid().equals(noteId))
+                                    .findFirst()
+                                    .get();
+                            imagesListMutableLiveData.postValue(noteX.getImageUrl());
+                        }
+                    }
+                });
+        return imagesListMutableLiveData;
+    }
+
     /*
     TODO s
      * logi do statystyk

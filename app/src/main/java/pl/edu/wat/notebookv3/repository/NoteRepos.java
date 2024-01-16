@@ -142,6 +142,40 @@ public class NoteRepos {
                         .build(),
                 DashboardFragment.getCurrentFolder());
     }
+
+    public void updateFile(String uid, String folderName, List<String> fileUrls) {
+        this.firebaseFolderRepository
+                .getById(folderName)
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            Folder folder = documentSnapshot.toObject(Folder.class);
+                            boolean isPresent = folder.getNotes().stream()
+                                    .anyMatch(note1 -> note1.getUuid().equals(uid));
+                            if(isPresent) {
+                                Note noteX = folder.getNotes().stream()
+                                        .filter(note1 -> note1.getUuid().equals(uid))
+                                        .findFirst()
+                                        .get();
+
+
+                                folder.getNotes().remove(noteX);
+
+                                noteX.getFileUrl().clear();
+                                noteX.getFileUrl().addAll(fileUrls);
+
+                                folder.getNotes().add(noteX);
+
+
+                                firebaseFolderRepository
+                                        .update(folderName, folder);
+                            }
+                        }
+
+                    }
+                });
+    }
     public void updateImage(String uid, String folderName, List<String> imageUrls) {
         this.firebaseFolderRepository
                 .getById(folderName)
@@ -305,6 +339,31 @@ public class NoteRepos {
                     }
                 });
         return imagesListMutableLiveData;
+    }
+    public MutableLiveData<List<String>> getFiles(String noteId, String currentFolder) {
+        MutableLiveData<List<String>> fileListMutableLiveData = new MutableLiveData<>();
+        this.firebaseFirestore.collection(USERS_PATH)
+                .document(firebaseUserRepository.get().getUid())
+                .collection(FOLDER_PATH)
+                .document(currentFolder)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable @org.jetbrains.annotations.Nullable DocumentSnapshot documentSnapshot, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+                        Folder folder = documentSnapshot.toObject(Folder.class);
+
+                        boolean isPresent = folder.getNotes().stream()
+                                .anyMatch(note1 -> note1.getUuid().equals(noteId));
+
+                        if(isPresent) {
+                            Note noteX = folder.getNotes().stream()
+                                    .filter(note1 -> note1.getUuid().equals(noteId))
+                                    .findFirst()
+                                    .get();
+                            fileListMutableLiveData.postValue(noteX.getFileUrl());
+                        }
+                    }
+                });
+        return fileListMutableLiveData;
     }
 
     /*

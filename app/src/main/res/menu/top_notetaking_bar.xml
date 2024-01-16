@@ -26,26 +26,33 @@
         android:title="Ważne"
         app:showAsAction="always" />
     <item
+        android:id="@+id/add_file"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/attach_file"
+        android:title="Add file"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/add_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/image"
         android:title="Add Image"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/share_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/share"
         android:title="Share"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/reminder_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/notifications"
         android:title="Reminder"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
 
 </menu>

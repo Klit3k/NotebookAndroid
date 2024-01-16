@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ import io.noties.markwon.editor.MarkwonEditorTextWatcher;
 import io.noties.markwon.image.ImagesPlugin;
 import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.model.Reminder;
+import pl.edu.wat.notebookv3.model.adapter.FileAdapter;
 import pl.edu.wat.notebookv3.model.adapter.ImageAdapter;
 import pl.edu.wat.notebookv3.model.safenote.SafenoteResponse;
 import pl.edu.wat.notebookv3.util.AlarmReceiver;
@@ -59,6 +61,8 @@ import java.util.concurrent.Executors;
 import static android.content.Context.ALARM_SERVICE;
 
 public class NoteTakingFragment extends Fragment {
+    private static final int PICK_PDF_FILE = 2;
+
     private NoteTakingFragmentArgs args;
     private TextInputEditText bodyInputText;
     private List<String> imageUrls;
@@ -71,6 +75,7 @@ public class NoteTakingFragment extends Fragment {
     private ImageAdapter imageAdapter;
 
     private ProgressDialog progressDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -255,7 +260,7 @@ public class NoteTakingFragment extends Fragment {
             Log.d("Test", "currentFolder = " + args.getCurrentFolder());
             if (!body.isEmpty()) {
                 if (tag != null)
-                    noteTakingViewModel.updateNote(tag, title, body, imageUrls);
+                    noteTakingViewModel.updateNote(tag, title, body, imageUrls, filesUrlG);
                 else
                     noteTakingViewModel.createNote(title, body);
             }
@@ -286,9 +291,85 @@ public class NoteTakingFragment extends Fragment {
                 markwon.setMarkdown(bodyInputText, bodyInputText.getText().toString());
             } else if (item.getItemId() == R.id.add_image) {
                 showAddImage();
+            } else if (item.getItemId() == R.id.add_file) {
+                showFileDialog();
             }
             return item.getItemId() == R.id.reminder_item;
         };
+    }
+
+    private void showFileDialog() {
+        AlertDialog.Builder shareBuilder = new AlertDialog.Builder(getContext());
+        shareBuilder.setTitle("Wybierz");
+        View customMessage = getLayoutInflater().inflate(R.layout.file_dialog, null);
+        shareBuilder.setView(customMessage);
+        AlertDialog dialog = shareBuilder.show();
+
+        customMessage.findViewById(R.id.file_upload)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showAddFile();
+                        dialog.dismiss();
+                    }
+                });
+        customMessage.findViewById(R.id.file_list)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showFileList();
+                        dialog.dismiss();
+                    }
+
+                });
+    }
+
+    FileAdapter fileAdapter;
+    List<String> filesUrlG;
+
+    public void showFileList() {
+        filesUrlG = Arrays.asList("Test");
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Załączone pliki");
+        builder.setNeutralButton("Zamknij", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        View customMessage = getLayoutInflater().inflate(R.layout.file_recycler, null);
+        RecyclerView fileRecyclerView = customMessage.findViewById(R.id.file_recyclerview);
+        fileRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        TextView empty = customMessage.findViewById(R.id.empty_recycler);
+
+        noteTakingViewModel.getFiles(tag, args.getCurrentFolder()).observe(getViewLifecycleOwner(), new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> filesUrl) {
+                filesUrlG = filesUrl;
+
+                fileAdapter = new FileAdapter(filesUrlG, tag, DashboardFragment.getCurrentFolder());
+                fileRecyclerView.setAdapter(fileAdapter);
+
+                if(fileAdapter.getItemCount() == 0) {
+                    empty.setVisibility(View.VISIBLE);
+                } else {
+                    empty.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        builder.setView(customMessage);
+        AlertDialog dialog = builder.show();
+
+
+    }
+
+    private void showAddFile() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/pdf");
+
+        startActivityForResult(intent, PICK_PDF_FILE);
     }
 
     private void showAddImage() {
@@ -304,32 +385,75 @@ public class NoteTakingFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (resultCode) {
+
             case Activity.RESULT_OK:
-                if (data != null && data.getData() != null) {
-                    progressDialog = new ProgressDialog(getContext());
-                    progressDialog.setMessage("Dodawanie obrazu");
-                    progressDialog.show();
+                progressDialog = new ProgressDialog(getContext());
 
-                    noteTakingViewModel.uploadImage(tag, data.getData())
-                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                if (requestCode == PICK_PDF_FILE) {
+                    Log.d("Test", "Zaznaczono: " + data.getData().toString());
+                    progressDialog.setMessage("Dodawanie pliku");
+
+                    AlertDialog.Builder builderDialog = new AlertDialog.Builder(getContext());
+                    View customLayout = getLayoutInflater().inflate(R.layout.dialog_input_filename, null);
+                    EditText inputFilename = customLayout.findViewById(R.id.filename);
+                    builderDialog.setView(customLayout);
+
+                    builderDialog.setTitle("Wprowadz nazwe")
+                            .setPositiveButton("Zatwierdz", new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onSuccess(Uri uri) {
-                                    Snackbar.make(getView(), "Obraz został dodany pomyślnie.", Snackbar.LENGTH_SHORT).show();
-                                    if(imageUrls != null)
-                                        imageUrls.add(uri.toString());
-                                    else
-                                        imageUrls = new ArrayList<>(Arrays.asList(uri.toString()));
+                                public void onClick(DialogInterface dialog, int which) {
+                                    progressDialog.show();
+                                    noteTakingViewModel.uploadFile(tag, data.getData(), inputFilename.getText().toString())
+                                            .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                @Override
+                                                public void onSuccess(Uri uri) {
+                                                    Snackbar.make(getView(), "Plik został dodany pomyślnie.", Snackbar.LENGTH_SHORT).show();
+                                                    Log.d("Test", "Url pliku: " + uri.toString());
+                                                    if (filesUrlG != null)
+                                                        filesUrlG.add(uri.toString());
+                                                    else
+                                                        filesUrlG = new ArrayList<>(Arrays.asList(uri.toString()));
 
-                                    noteTakingViewModel.updateImage(
-                                            tag,
-                                            titleInputText.getText().toString(),
-                                            bodyInputText.getText().toString(),
-                                            imageUrls
-                                    );
-                                    progressDialog.dismiss();
+                                                    noteTakingViewModel.updateFile(
+                                                            tag,
+                                                            filesUrlG
+                                                    );
+
+                                                    progressDialog.dismiss();
+                                                }
+                                            });
                                 }
                             });
 
+                    AlertDialog dialog = builderDialog.show();
+
+
+                } else {
+                    if (data != null && data.getData() != null) {
+                        progressDialog.setMessage("Dodawanie obrazu");
+                        progressDialog.show();
+
+                        noteTakingViewModel.uploadImage(tag, data.getData())
+                                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        Snackbar.make(getView(), "Obraz został dodany pomyślnie.", Snackbar.LENGTH_SHORT).show();
+                                        if (imageUrls != null)
+                                            imageUrls.add(uri.toString());
+                                        else
+                                            imageUrls = new ArrayList<>(Arrays.asList(uri.toString()));
+
+                                        noteTakingViewModel.updateImage(
+                                                tag,
+                                                titleInputText.getText().toString(),
+                                                bodyInputText.getText().toString(),
+                                                imageUrls
+                                        );
+                                        progressDialog.dismiss();
+                                    }
+                                });
+
+                    }
                 }
                 break;
             case ImagePicker.RESULT_ERROR:
@@ -367,12 +491,13 @@ public class NoteTakingFragment extends Fragment {
     private void showTimePicker() {
         datePickerBuilder = MaterialDatePicker.Builder
                 .datePicker();
+        calendar = Calendar.getInstance();
 
 
         timePicker = new MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)
-                .setHour(12)
-                .setMinute(0)
+                .setHour(calendar.get(Calendar.HOUR_OF_DAY))
+                .setMinute(calendar.get(Calendar.MINUTE))
                 .setTitleText("Wybierz godzinę alarmu")
                 .build();
         MaterialDatePicker<Long> datePicker = datePickerBuilder.build();
@@ -380,7 +505,6 @@ public class NoteTakingFragment extends Fragment {
         timePicker.addOnPositiveButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar = Calendar.getInstance();
                 calendar.set(Calendar.HOUR_OF_DAY, timePicker.getHour());
                 calendar.set(Calendar.MINUTE, timePicker.getMinute());
                 calendar.set(Calendar.SECOND, 0);
@@ -417,31 +541,26 @@ public class NoteTakingFragment extends Fragment {
         LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault());
 
         Reminder reminder = Reminder.builder()
-                .id(UUID.randomUUID().toString())
+                .id(String.valueOf(Math.abs(UUID.randomUUID().hashCode())))
                 .message(message)
                 .remindDate(date.toString())
                 .build();
         Log.d("Test:Calendar", date.format(DateTimeFormatter.ISO_DATE_TIME));
 
-        alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
+
+
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
         intent.putExtra("Message", reminder.getMessage());
         intent.putExtra("RemindDate", reminder.getRemindDate().toString());
         intent.putExtra("id", reminder.getId());
 
-        pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_MUTABLE);
+        Log.d("Test", "setAlarm: " + "message="+reminder.getMessage()+ " id="+ reminder.getId());
 
-
-//        Map<String, Object> data = new HashMap<>();
-//        data.put("packageName", getContext().getPackageName());
-//        data.put("className", AlarmReceiver.class.getName());
-//
-//        reminder.setPendingIntent(data);
-        noteTakingViewModel.createReminder(reminder);
-
-//        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+        pendingIntent = PendingIntent.getBroadcast(getContext(), Integer.parseInt(reminder.getId()), intent, PendingIntent.FLAG_MUTABLE);
+        alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
         alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(time, pendingIntent), pendingIntent);
 
+        noteTakingViewModel.createReminder(reminder);
         Toast.makeText(getContext(), "Ustawiono alarm", Toast.LENGTH_SHORT).show();
     }
 

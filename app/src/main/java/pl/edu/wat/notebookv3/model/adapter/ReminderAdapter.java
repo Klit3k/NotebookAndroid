@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static android.content.Context.ALARM_SERVICE;
+
 public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHolder> {
     List<Reminder> reminderList;
     FirebaseReminderRepository reminderRepository;
@@ -68,11 +70,15 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 reminderRepository.remove(holder.view.getTag().toString());
-                                notifyItemRemoved(position);
                                 Reminder reminder = reminderList.stream().filter(e -> e.getId().equals(holder.view.getTag().toString()))
                                         .findFirst()
                                         .get();
                                 reminderList.remove(reminder);
+                                cancelAlarm(String.valueOf(reminder.getId()), v.getContext());
+
+
+
+                                notifyItemRemoved(holder.getBindingAdapterPosition());
                                 Snackbar.make(v, "Usunięto powiadomienie", Snackbar.LENGTH_SHORT).show();
                             }
                         })
@@ -83,11 +89,20 @@ public class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHo
                             }
                         });
                 builder.show();
-                return false;
+                return true;
             }
         });
     }
+    private void cancelAlarm(String id, Context context) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra("id", id);
 
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, Integer.parseInt(id), intent, PendingIntent.FLAG_MUTABLE);
+        Log.d("Test", "cancelAlarm: id="+ id);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+    }
 
     @Override
     public int getItemCount() {

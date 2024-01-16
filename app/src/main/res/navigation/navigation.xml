@@ -17,7 +17,11 @@
                 app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"/>
     </fragment>
     <fragment android:id="@+id/recoveryFragment" android:name="pl.edu.wat.notebookv3.view.RecoveryFragment"
-              android:label="fragment_recovery" tools:layout="@layout/fragment_recovery"/>
+              android:label="fragment_recovery" tools:layout="@layout/fragment_recovery">
+        <action
+            android:id="@+id/action_recoveryFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
     <fragment android:id="@+id/dashboardFragment" android:name="pl.edu.wat.notebookv3.view.DashboardFragment"
               android:label="fragment_dashboard" tools:layout="@layout/fragment_dashboard">
         <action android:id="@+id/action_dashboardFragment_to_accountFragment" app:destination="@id/accountFragment">

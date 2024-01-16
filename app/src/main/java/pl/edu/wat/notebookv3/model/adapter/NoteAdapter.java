@@ -25,6 +25,8 @@ import pl.edu.wat.notebookv3.view.DashboardFragmentDirections;
 
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -49,10 +51,13 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
     }
 
     public void sortByDate(boolean asc) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy, HH:mm:ss");
+
         if (asc)
-            noteList.sort(Comparator.comparing(Note::getUpdateTime));
-        else
-            noteList.sort(Comparator.comparing(Note::getUpdateTime).reversed());
+            noteList.sort(Comparator.comparing(e -> LocalDateTime.parse(e.getUpdateTime(), dtf)));
+        else {
+            noteList.sort(Comparator.comparing((Note e) -> LocalDateTime.parse(e.getUpdateTime(), dtf)).reversed());
+        }
         notifyDataSetChanged();
     }
     @NonNull
@@ -66,16 +71,16 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        if(noteList.get(position).getTitle().length() >= 40) {
-            holder.titleToolbar.setTitle(noteList.get(position).getTitle().substring(0, 40)+"...");
-        } else  holder.titleToolbar.setTitle(noteList.get(position).getTitle());
-        if(noteList.get(position).getBody().length() >= 35) {
-            holder.body.setText(noteList.get(position).getBody().substring(0, 35)+"...");
-        } else holder.body.setText(noteList.get(position).getBody());
+        if(noteList.get(holder.getBindingAdapterPosition()).getTitle().length() >= 40) {
+            holder.titleToolbar.setTitle(noteList.get(holder.getBindingAdapterPosition()).getTitle().substring(0, 40)+"...");
+        } else  holder.titleToolbar.setTitle(noteList.get(holder.getBindingAdapterPosition()).getTitle());
+        if(noteList.get(holder.getBindingAdapterPosition()).getBody().length() >= 35) {
+            holder.body.setText(noteList.get(holder.getBindingAdapterPosition()).getBody().substring(0, 35)+"...");
+        } else holder.body.setText(noteList.get(holder.getBindingAdapterPosition()).getBody());
 
-        holder.time.setText(noteList.get(position).getUpdateTime());
-        holder.view.setTag(noteList.get(position).getUuid());
-        holder.body.setTag(noteList.get(position).isStarred());
+        holder.time.setText(noteList.get(holder.getBindingAdapterPosition()).getUpdateTime());
+        holder.view.setTag(noteList.get(holder.getBindingAdapterPosition()).getUuid());
+        holder.body.setTag(noteList.get(holder.getBindingAdapterPosition()).isStarred());
         holder.view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -94,11 +99,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.ViewHolder> im
             public void onClick(View v) {
                 Log.d("TEST::", "OnClick tag: " + holder.view.getTag());
                 DashboardFragmentDirections.ActionDashboardFragmentToNoteTakingFragment direction = DashboardFragmentDirections.actionDashboardFragmentToNoteTakingFragment(
-                        noteList.get(position).getTitle()
-                        ,  noteList.get(position).getBody()
-                        ,  noteList.get(position).getUuid()
+                        noteList.get(holder.getBindingAdapterPosition()).getTitle()
+                        ,  noteList.get(holder.getBindingAdapterPosition()).getBody()
+                        ,  noteList.get(holder.getBindingAdapterPosition()).getUuid()
                         , DashboardFragment.getCurrentFolder()
-                        , noteList.get(position).isStarred()
+                        , noteList.get(holder.getBindingAdapterPosition()).isStarred()
                 );
 
                 Navigation.findNavController( holder.view)

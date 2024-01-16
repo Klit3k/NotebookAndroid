@@ -18,8 +18,8 @@ public class Note implements Serializable {
     private String body;
     private String updateTime;
     private boolean starred;
-    @Exclude
     private List<String> imageUrl;
+    private List<String> fileUrl;
     @Exclude
     private String uuid;
 }

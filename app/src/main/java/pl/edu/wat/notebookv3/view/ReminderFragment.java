@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -56,12 +57,20 @@ public class ReminderFragment extends Fragment {
         notificationRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         notificationRecycler.setHasFixedSize(true);
 
+        TextView empty = view.findViewById(R.id.empty_recycler);
 
         viewModel.getReminders().observe(getViewLifecycleOwner(), notifications -> {
             reminderAdapter = new ReminderAdapter(notifications);
             notificationRecycler.setAdapter(reminderAdapter);
-            reminderAdapter.notifyDataSetChanged();
-            this.notificationList = notifications;
+            
+
+            if(reminderAdapter.getItemCount() == 0) {
+                notificationRecycler.setVisibility(View.GONE);
+                empty.setVisibility(View.VISIBLE);
+            } else {
+                notificationRecycler.setVisibility(View.VISIBLE);
+                empty.setVisibility(View.GONE);
+            }
         });
 
         return view;

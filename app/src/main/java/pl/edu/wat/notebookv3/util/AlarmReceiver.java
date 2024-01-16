@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import pl.edu.wat.notebookv3.MainActivity;
@@ -22,7 +23,9 @@ public class AlarmReceiver extends BroadcastReceiver {
         Reminder reminder = new Reminder();
         reminder.setMessage(intent.getStringExtra("Message"));
         reminder.setRemindDate(intent.getStringExtra("RemindDate"));
-        reminder.setId(String.valueOf(intent.getIntExtra("id",0)));
+        reminder.setId(intent.getStringExtra("id"));
+
+        Log.d("Test", "onReceive: message="+reminder.getMessage() + " id="+reminder.getId());
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "general")
                 .setSmallIcon(R.drawable.notifications)
@@ -33,6 +36,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(123, builder.build());
+        notificationManagerCompat.notify(Integer.parseInt(reminder.getId()), builder.build());
     }
 }

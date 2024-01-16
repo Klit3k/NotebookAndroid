@@ -46,17 +46,14 @@ public class FirebaseReminderRepository {
                 .collection(USERS_PATH)
                 .document(firebaseUserRepository.get().getUid())
                 .collection(REMINDER_PATH)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    public void onEvent(@Nullable @org.jetbrains.annotations.Nullable QuerySnapshot value, @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
                         List<Reminder> reminderList = new ArrayList<>();
-                        for (DocumentSnapshot snapshot:
-                                queryDocumentSnapshots.getDocuments()) {
-
-                            reminderList.add(snapshot.toObject(Reminder.class));
+                        if (value.toObjects(Reminder.class) != null ) {
+                            reminderList.addAll(value.toObjects(Reminder.class));
+                            getReminderList.postValue(reminderList);
                         }
-                        getReminderList.postValue(reminderList);
                     }
                 });
 

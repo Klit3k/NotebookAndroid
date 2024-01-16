@@ -19,23 +19,20 @@ import java.util.UUID;
 
 public class NoteTakingViewModel extends ViewModel {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("EEEE, dd MMM yyyy, HH:mm:ss");
-    @Getter
-    FirebaseNoteRepository firebaseNoteRepository;
     private FirebaseReminderRepository firebaseReminderRepository;
 
     NoteRepos noteRepos;
     public NoteTakingViewModel() {
-        firebaseNoteRepository = new FirebaseNoteRepository();
         firebaseReminderRepository = new FirebaseReminderRepository();
         noteRepos = new NoteRepos();
     }
 
-    public void deleteNote(String uid) {
-        firebaseNoteRepository.remove(uid);
-    }
 
     public MutableLiveData<List<String>> getImages(String tag, String currentFolder) {
         return noteRepos.getImages(tag, currentFolder);
+    }
+    public MutableLiveData<List<String>> getFiles(String tag, String currentFolder) {
+        return noteRepos.getFiles(tag, currentFolder);
     }
     public void createNote(String title, String body) {
         String time = dtf.format(LocalDateTime.now());
@@ -47,6 +44,7 @@ public class NoteTakingViewModel extends ViewModel {
                         .body(body)
                         .updateTime(time)
                         .imageUrl(new ArrayList<>())
+                        .fileUrl(new ArrayList<>())
                         .build()
                 , DashboardFragment.getCurrentFolder()
         );
@@ -61,17 +59,19 @@ public class NoteTakingViewModel extends ViewModel {
                         .body(body)
                         .updateTime(time)
                         .imageUrl(new ArrayList<>())
+                        .fileUrl(new ArrayList<>())
                         .build()
                 , DashboardFragment.getCurrentFolder()
         );
     }
-    public void updateNote(String uid, String title, String body, List<String> imageUrls) {
+    public void updateNote(String uid, String title, String body, List<String> imageUrls, List<String> fileUrls) {
         noteRepos.update(
                 Note.builder()
                         .title(title)
                         .body(body)
                         .uuid(uid)
                         .imageUrl(imageUrls)
+                        .fileUrl(fileUrls)
                         .updateTime(dtf.format(LocalDateTime.now()))
                         .build(),
                 DashboardFragment.getCurrentFolder());
@@ -81,18 +81,21 @@ public class NoteTakingViewModel extends ViewModel {
         firebaseReminderRepository.create(reminder);
     }
 
-    public void share() {
-//        ShareOptionsFragment shareOptionsFragment = ShareOptionsFragment.newInstance("test", "test2");
-//        shareOptionsFragment.show(((AppCompatActivity) context).getSupportFragmentManager(), "shareOption");
-    }
-
 
     public Task<Uri> uploadImage(String noteid, Uri data) {
         FirebaseStorageImageRepository firebaseStorageImageRepository = new FirebaseStorageImageRepository();
         return firebaseStorageImageRepository.uploadImage(noteid, data);
     }
+    public Task<Uri> uploadFile(String noteid, Uri data, String filename) {
+        FirebaseStorageFileRepository firebaseStorageFileRepository = new FirebaseStorageFileRepository();
 
+        return firebaseStorageFileRepository.uploadFile(noteid, data, filename);
+    }
     public void updateImage(String tag, String title, String body, List<String> imageUrls) {
         noteRepos.updateImage(tag, title, body, imageUrls);
+    }
+
+    public void updateFile(String tag, List<String> uris) {
+        noteRepos.updateFile(tag, DashboardFragment.getCurrentFolder(), uris);
     }
 }

@@ -31,6 +31,5 @@ public class FirebaseStorageImageRepository {
         StorageReference imageRef = firebaseStorage.getReferenceFromUrl(fileUrl);
         imageRef.delete();
         Log.d("Test", "Usunieto " + imageRef.getName());
-
     }
 }

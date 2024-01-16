@@ -23,12 +23,10 @@ import static android.app.PendingIntent.getActivity;
 public class DashboardViewModel extends ViewModel {
     @Getter
     MutableLiveData<List<Note>> noteListMutableLiveData;
-    private FirebaseNoteRepository firebaseNoteRepository;
     private FirebaseUserRepository firebaseUserRepository;
     private FirebaseFolderRepository firebaseFolderRepository;
     private NoteRepos noteRepos;
     public DashboardViewModel() {
-        firebaseNoteRepository = new FirebaseNoteRepository();
         firebaseUserRepository = new FirebaseUserRepository();
         firebaseFolderRepository = new FirebaseFolderRepository();
         noteRepos = new NoteRepos();
@@ -38,22 +36,7 @@ public class DashboardViewModel extends ViewModel {
     }
 
     private MutableLiveData<Note> lastlyDeletedNote;
-    public MutableLiveData<Note> getNote(String uuid) {
-        lastlyDeletedNote = new MutableLiveData<>();
-        firebaseNoteRepository.get(uuid, new NoteRepository.NoteResultListener() {
-            @Override
-            public void onNoteResult(Note n) {
-                lastlyDeletedNote.postValue(n);
-            }
 
-            @Override
-            public void onNoteError(Exception e) {
-
-            }
-        });
-
-        return lastlyDeletedNote;
-    }
     public MutableLiveData<List<Note>> getListNote() {
         return noteRepos.getList(DashboardFragment.getCurrentFolder());
     }

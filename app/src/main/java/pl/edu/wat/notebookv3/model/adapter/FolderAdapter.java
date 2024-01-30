@@ -52,8 +52,8 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.view.setTag(folderList.get(position).getName());
-        holder.button.setText(folderList.get(position).getName());
+        holder.view.setTag(folderList.get(holder.getBindingAdapterPosition()).getName());
+        holder.button.setText(folderList.get(holder.getBindingAdapterPosition()).getName());
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,7 +76,7 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.ViewHolder
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     folderRepository.remove(holder.button.getText().toString());
-                                    notifyItemRemoved(position);
+                                    notifyItemRemoved(holder.getBindingAdapterPosition());
                                     if (DashboardFragment.getCurrentFolder().equals(holder.button.getText().toString())) {
                                         DashboardFragment.setCurrentFolder(DashboardFragment.MAIN_FOLDER);
                                         Navigation.findNavController(v)

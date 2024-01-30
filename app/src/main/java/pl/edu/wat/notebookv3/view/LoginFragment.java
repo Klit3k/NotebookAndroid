@@ -17,6 +17,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,6 +27,8 @@ import pl.edu.wat.notebookv3.R;
 import pl.edu.wat.notebookv3.viewmodel.LoginViewModel;
 
 import java.util.Arrays;
+
+import static android.content.ContentValues.TAG;
 
 
 public class LoginFragment extends Fragment {
@@ -42,6 +45,7 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login, container, false);
+        FacebookSdk.sdkInitialize(getActivity());
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         final NavController navController = NavHostFragment.findNavController(this);
         if (loginViewModel.isLogged())
@@ -56,7 +60,7 @@ public class LoginFragment extends Fragment {
                     Snackbar.make(v, getResources().getString(R.string.enter_your_email_or_password), Snackbar.LENGTH_SHORT).show();
                 } else {
                     progressDialog = new ProgressDialog(v.getContext());
-                    progressDialog.setTitle("Loading ...");
+                    progressDialog.setTitle("Ładowanie ...");
                     progressDialog.show();
                     loginViewModel.login(email, password)
                             .addOnSuccessListener(authResult -> {
@@ -85,52 +89,55 @@ public class LoginFragment extends Fragment {
                                 .navigate(R.id.action_loginFragment_to_recoveryFragment)
                 );
         callbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                loginViewModel.loginWithFb(loginResult)
+                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                            @Override
+                            public void onSuccess(AuthResult authResult) {
+                                Log.d("TEST", "Logged successfully with fb");
+                                Navigation.findNavController(view)
+                                        .navigate(R.id.action_loginFragment_to_dashboardFragment);
+                                progressDialog.dismiss();
+                            }
+                        });
+
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("TEST", "facebook:onCancel");
+                progressDialog.dismiss();
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d("TEST", "facebook:onError", error);
+
+                progressDialog.dismiss();
+
+            }
+        });
+
         view.findViewById(R.id.continue_facebook_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressDialog = new ProgressDialog(v.getContext());
-                progressDialog.setTitle("Loading ...");
+                progressDialog.setTitle("Ładowanie ...");
                 progressDialog.show();
 
-                LoginManager loginManager = LoginManager.getInstance();
-                loginManager.logIn(LoginFragment.this, Arrays.asList("email", "public_profile"));
-                loginManager.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        loginViewModel.loginWithFb(loginResult)
-                                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                                    @Override
-                                    public void onSuccess(AuthResult authResult) {
-                                        Log.d("TEST", "Logged successfully with fb");
-                                        Navigation.findNavController(view)
-                                                .navigate(R.id.action_loginFragment_to_dashboardFragment);
-                                        progressDialog.dismiss();
-                                    }
-                                });
+                LoginManager.getInstance()
+                        .logInWithReadPermissions(getActivity(), callbackManager, Arrays.asList("public_profile", "email"));
 
-                    }
 
-                    @Override
-                    public void onCancel() {
-                        progressDialog.dismiss();
-
-                    }
-
-                    @Override
-                    public void onError(FacebookException error) {
-                        progressDialog.dismiss();
-
-                    }
-                });
             }
         });
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
 
-    }
+
 }

@@ -161,7 +161,7 @@ public class NoteRepos {
 
 
                                 folder.getNotes().remove(noteX);
-
+                                if(noteX.getFileUrl() == null) noteX.setFileUrl(new ArrayList<>());
                                 noteX.getFileUrl().clear();
                                 noteX.getFileUrl().addAll(fileUrls);
 

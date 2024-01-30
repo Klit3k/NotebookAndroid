@@ -21,105 +21,110 @@
                 android:layout_width="300dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
-                app:headerLayout="@layout/header_navigation_drawer">
-<!--                app:menu="@menu/navigation_drawer"-->
+                android:layout_marginEnd="111dp"
+                app:headerLayout="@layout/header_navigation_drawer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+                <!--                app:menu="@menu/navigation_drawer"-->
 
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">><LinearLayout
-                    android:id="@+id/accountSection"
-                    android:layout_width="298dp"
-                    android:layout_height="306dp"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/navHeader"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="23dp"
-                        android:layout_marginTop="23dp"
-                        android:text="Notebook"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                        android:textSize="24sp" />
+                    <LinearLayout
+                        android:id="@+id/accountSection"
+                        android:layout_width="298dp"
+                        android:layout_height="306dp"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
-                        android:id="@+id/navAccountHeader"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="27dp"
-                        android:layout_marginTop="22dp"
-                        android:text="Konto"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+                        <TextView
+                            android:id="@+id/navHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="23dp"
+                            android:layout_marginTop="23dp"
+                            android:text="Notebook"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                            android:textSize="24sp" />
 
-                    <Button
-                        android:id="@+id/accountInfo"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginTop="15dp"
-                        android:gravity="start|center_vertical"
-                        android:text="Informacje"
-                        android:textColor="@color/md_theme_dark_secondaryContainer"
-                        app:icon="@drawable/account_circle_24px"
-                        app:iconGravity="start"
-                        app:iconSize="24dp"
-                        app:iconTint="@color/md_theme_dark_secondaryContainer" />
+                        <TextView
+                            android:id="@+id/navAccountHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="27dp"
+                            android:layout_marginTop="22dp"
+                            android:text="Konto"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
 
-                    <Button
-                        android:id="@+id/importantNotes"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:gravity="start|center_vertical"
-                        android:text="Ważne notatki"
-                        android:textColor="@color/md_theme_dark_secondaryContainer"
-                        app:icon="@drawable/star"
-                        app:iconGravity="start"
-                        app:iconSize="24dp"
-                        app:iconTint="@color/md_theme_dark_secondaryContainer" />
+                        <Button
+                            android:id="@+id/accountInfo"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginTop="15dp"
+                            android:gravity="start|center_vertical"
+                            android:text="Informacje"
+                            android:textColor="@color/md_theme_dark_secondaryContainer"
+                            app:icon="@drawable/account_circle_24px"
+                            app:iconGravity="start"
+                            app:iconSize="24dp"
+                            app:iconTint="@color/md_theme_dark_secondaryContainer" />
 
-                    <Button
-                        android:id="@+id/trashedNotes"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:gravity="start|center_vertical"
-                        android:text="Usunięte notatki"
-                        android:textColor="@color/md_theme_dark_secondaryContainer"
-                        app:icon="@drawable/delete"
-                        app:iconGravity="start"
-                        app:iconSize="24dp"
-                        app:iconTint="@color/md_theme_dark_secondaryContainer" />
+                        <Button
+                            android:id="@+id/importantNotes"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:gravity="start|center_vertical"
+                            android:text="Ważne notatki"
+                            android:textColor="@color/md_theme_dark_secondaryContainer"
+                            app:icon="@drawable/star"
+                            app:iconGravity="start"
+                            app:iconSize="24dp"
+                            app:iconTint="@color/md_theme_dark_secondaryContainer" />
 
-                    <Button
-                        android:id="@+id/navLogout"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:gravity="start|center_vertical"
-                        android:text="Wyloguj"
-                        android:textColor="@color/md_theme_dark_secondaryContainer"
-                        app:icon="@drawable/logout_24px"
-                        app:iconGravity="start"
-                        app:iconSize="24dp"
-                        app:iconTint="@color/md_theme_dark_secondaryContainer" />
+                        <Button
+                            android:id="@+id/trashedNotes"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:gravity="start|center_vertical"
+                            android:text="Usunięte notatki"
+                            android:textColor="@color/md_theme_dark_secondaryContainer"
+                            app:icon="@drawable/delete"
+                            app:iconGravity="start"
+                            app:iconSize="24dp"
+                            app:iconTint="@color/md_theme_dark_secondaryContainer" />
 
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        app:dividerColor="?android:attr/listDivider"
-                        app:dividerInsetEnd="28dp"
-                        app:dividerInsetStart="28dp" />
-                </LinearLayout>
+                        <Button
+                            android:id="@+id/navLogout"
+                            style="@style/Widget.Material3.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:gravity="start|center_vertical"
+                            android:text="Wyloguj"
+                            android:textColor="@color/md_theme_dark_secondaryContainer"
+                            app:icon="@drawable/logout_24px"
+                            app:iconGravity="start"
+                            app:iconSize="24dp"
+                            app:iconTint="@color/md_theme_dark_secondaryContainer" />
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="8dp"
+                            app:dividerColor="?android:attr/listDivider"
+                            app:dividerInsetEnd="28dp"
+                            app:dividerInsetStart="28dp" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -137,56 +142,60 @@
                             app:dividerInsetEnd="28dp"
                             app:dividerInsetStart="28dp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/accountSection">
-                        <TextView
-                            android:id="@+id/navFoldersHeader"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="27dp"
-                            android:layout_marginTop="12dp"
-                            android:text="Foldery"
-                            android:clickable="true"
-                            android:textStyle="bold"
-                            android:textColor="@color/md_theme_dark_secondaryContainer"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-                            android:gravity="start|center_vertical"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp"
-                            android:text="|"
-                            android:clickable="true"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
-                        <TextView
-                            android:id="@+id/navTagsHeader"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="Tagi"
-                            android:clickable="true"
-                            android:textColor="@color/md_theme_dark_secondaryContainer"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+                            android:orientation="horizontal"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/accountSection">
+
+                            <TextView
+                                android:id="@+id/navFoldersHeader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="27dp"
+                                android:layout_marginTop="12dp"
+                                android:clickable="true"
+                                android:gravity="start|center_vertical"
+                                android:text="Foldery"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                                android:textColor="@color/md_theme_dark_secondaryContainer"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginTop="12dp"
+                                android:layout_marginRight="10dp"
+                                android:clickable="true"
+                                android:text="|"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
+
+                            <TextView
+                                android:id="@+id/navTagsHeader"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:clickable="true"
+                                android:text="Tagi"
+                                android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                                android:textColor="@color/md_theme_dark_secondaryContainer" />
 
 
-                        <ImageButton
-                            android:id="@+id/imageButton"
-                            style="@style/Widget.Material3.Button.Icon"
-                            android:layout_width="0dp"
-                            android:layout_height="19.5dp"
-                            android:layout_gravity="bottom"
-                            android:layout_marginStart="70dp"
-                            android:layout_weight="1"
-                            android:tint="@color/md_theme_dark_secondaryContainer"
-                            app:srcCompat="@drawable/baseline_add_circle_outline_24" />
-                    </LinearLayout>
+                            <ImageButton
+                                android:id="@+id/imageButton"
+                                style="@style/Widget.Material3.Button.Icon"
+                                android:layout_width="0dp"
+                                android:layout_height="19.5dp"
+                                android:layout_gravity="bottom"
+                                android:layout_marginStart="70dp"
+                                android:layout_weight="1"
+                                app:tint="@color/md_theme_dark_secondaryContainer"
+                                app:srcCompat="@drawable/baseline_add_circle_outline_24" />
+                        </LinearLayout>
+
                         <Button
                             android:id="@+id/mainFolder"
                             style="@style/Widget.Material3.Button.TextButton"
@@ -201,12 +210,14 @@
                             app:iconGravity="start"
                             app:iconSize="24dp"
                             app:iconTint="@color/md_theme_dark_secondaryContainer" />
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginLeft="16dp"
 
                             />
+
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/folder2"
                             style="@style/Widget.Material3.Button.TextButton"
@@ -220,7 +231,6 @@
                             app:iconGravity="start"
                             app:iconSize="24dp"
                             app:iconTint="@color/md_theme_dark_secondaryContainer" />
-
 
 
                     </LinearLayout>

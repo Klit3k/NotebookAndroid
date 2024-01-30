@@ -76,19 +76,12 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ;
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
 
         materialToolbar = view.findViewById(R.id.topAppBar);
 
-//        if (getArguments() != null && !getArguments().isEmpty()) {
-//            args = DashboardFragmentArgs.fromBundle(getArguments());
-//            if (args.getFolder() != null) {
-//                setCurrentFolder(args.getFolder());
-//            }
-//        }
+
 
 
         /*
@@ -311,13 +304,12 @@ public class DashboardFragment extends Fragment {
 
                 final ArrayAdapter<String> adp = new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_spinner_item, s);
-                final Spinner sp = new Spinner(getActivity());
-                sp.setLayoutParams(new LinearLayout.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT));
-                sp.setPadding(20, 5, 20, 5);
-                sp.setAdapter(adp);
+                View spinnerView = getLayoutInflater().inflate(R.layout.choose_folder, null);
+                Spinner spinner = spinnerView.findViewById(R.id.spinner);
+                spinner.setAdapter(adp);
                 builder
                         .setTitle("Wybierz folder")
-                        .setView(sp)
+                        .setView(spinnerView)
                         .setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -328,9 +320,9 @@ public class DashboardFragment extends Fragment {
                         .setPositiveButton("Przenieś", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Log.d("Test:onClick", "transfer: " + getCurrentFolder() + " -> " + sp.getSelectedItem().toString() + " tag: " + viewHolder.itemView.getTag().toString());
+                                Log.d("Test:onClick", "transfer: " + getCurrentFolder() + " -> " + spinner.getSelectedItem().toString() + " tag: " + viewHolder.itemView.getTag().toString());
 
-                                viewModel.transferNote(viewHolder.itemView.getTag().toString(), getCurrentFolder(), sp.getSelectedItem().toString());
+                                viewModel.transferNote(viewHolder.itemView.getTag().toString(), getCurrentFolder(), spinner.getSelectedItem().toString());
 
                             }
                         })

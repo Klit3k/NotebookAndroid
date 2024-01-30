@@ -42,14 +42,14 @@
                     android:layout_height="wrap_content" android:gravity="center_horizontal"
                     android:isScrollContainer="true" android:nestedScrollingEnabled="true"
                     android:scrollbars="vertical" android:scrollbarStyle="insideInset">
+
                 <TextView
-                        android:id="@+id/textView7"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="80dp"
-                        android:text="Account settings"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-                />
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="80dp"
+                    android:text="Informacje o koncie"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
                 <TextView
                         android:id="@+id/email_text"
                         android:layout_width="250dp"

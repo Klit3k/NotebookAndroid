@@ -55,7 +55,7 @@ public class ReminderFragment extends Fragment {
 
         notificationRecycler.setLayoutManager(notificationLayoutManager);
         notificationRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        notificationRecycler.setHasFixedSize(true);
+//        notificationRecycler.setHasFixedSize(true);
 
         TextView empty = view.findViewById(R.id.empty_recycler);
 

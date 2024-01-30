@@ -25,7 +25,7 @@
                 android:id="@+id/note_password_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="If no password, leave empty" />
+                android:hint="Brak hasła" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="5dp"
             android:gravity="start|center_vertical"
-            android:text="Password"
+            android:text="Hasło"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/textInputLayout"
             app:layout_constraintEnd_toStartOf="@+id/textInputLayout"
@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:gravity="start|center_vertical"
-            android:text="Lifetime"
+            android:text="Czas życia"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/seekBar"
             app:layout_constraintEnd_toStartOf="@+id/seekBar"

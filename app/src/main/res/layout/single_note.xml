@@ -73,10 +73,10 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
                     android:layout_marginBottom="16dp"
                     android:gravity="end"
                     android:text="Last update: 04.11.2023"
-                    android:textAlignment="textStart"
                     android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     android:textColor="?android:attr/textColorSecondary" />
 
